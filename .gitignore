@@ -23,5 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# svelte-routify
+.routify
+.history
+
 # sales_note
 package-lock.json

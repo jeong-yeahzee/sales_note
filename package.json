@@ -18,7 +18,7 @@
     "@roxi/routify": "^2.18.8",
     "@sveltejs/vite-plugin-svelte": "^1.0.5",
     "autoprefixer": "^10.4.7",
-    "electron": "^30.5.0",
+    "electron": "^33.2.0",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.14",
     "postcss-import": "^14.1.0",
