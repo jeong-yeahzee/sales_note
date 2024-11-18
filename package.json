@@ -2,7 +2,6 @@
   "name": "sales_note",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "main": "main.js",
   "scripts": {
     "dev": "run-p dev:*",
