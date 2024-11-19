@@ -39,10 +39,10 @@ app.on("window-all-closed", () => {
   }
 });
 
-// DB 쿼리 결과를 렌더러로 전달하는 IPC 핸들러
-ipcMain.handle('db-query', (event, query) => {
+// DB 쿼리 결과를 렌더러로 전달하는 IPC 핸들러 ( 조회 )
+ipcMain.handle('db-all', (event, param) => {
   return new Promise((resolve, reject) => {
-    db.all(query, (err, rows) => {
+    db.all(param, (err, rows) => {
       if (err) {
         reject(err);
       } else {
@@ -51,8 +51,20 @@ ipcMain.handle('db-query', (event, query) => {
     });
   });
 });
+// DB 쿼리 결과를 렌더러로 전달하는 IPC 핸들러 ( 추가,수정,삭제 )
+ipcMain.handle('db-run', (event, param) => {
+  return new Promise((resolve, reject) => {
+    db.run(param.query, param.value, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(this.changes);
+      }
+    });
+  });
+});
 
-//
+// 데이터베이스 초기화 (테이블 생성)
 function init_db(){
   const query = create_table_query();
 
@@ -66,6 +78,7 @@ function init_db(){
   });
 }
 
+// 테이블 생성하는 쿼리
 function create_table_query(){
   const shop_query = `CREATE TABLE IF NOT EXISTS SHOP_T (
                           SHOP_NO INTEGER PRIMARY KEY AUTOINCREMENT,

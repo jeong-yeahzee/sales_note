@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
-    db_query: (query) => ipcRenderer.invoke('db-query', query)
+    db_all: (param) => ipcRenderer.invoke('db-all', param),
+    db_run: (param) => ipcRenderer.invoke('db-run', param)
 });
