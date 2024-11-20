@@ -41,6 +41,7 @@ app.on("window-all-closed", () => {
 
 // DB 쿼리 결과를 렌더러로 전달하는 IPC 핸들러 ( 조회 )
 ipcMain.handle('db-all', (event, param) => {
+  console.log(param);
   return new Promise((resolve, reject) => {
     db.all(param, (err, rows) => {
       if (err) {

@@ -26,3 +26,8 @@ input:focus,button:focus,textarea:focus,select:focus{
 *:disabled{
     opacity: 0.7;
 }
+
+.ag-theme-quartz{
+    --ag-border-radius: 0px !important;
+    --ag-wrapper-border-radius: 0px !important;
+}
