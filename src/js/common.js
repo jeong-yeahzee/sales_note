@@ -15,7 +15,7 @@ export function g_nvl(text, rText) {
  * 콤마찍기
  */
 export function comma(str) {
-    str = String(Number(String(g_nvl2(str, "0")).replace(/[^0-9-]/g,"")));
+    str = String(Number(String(g_nvl(str, "0")).replace(/[^0-9-]/g,"")));
     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
 }
 

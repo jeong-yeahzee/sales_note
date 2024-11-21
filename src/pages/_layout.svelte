@@ -1,8 +1,9 @@
 <style>
     .div_contain{
         display: flex;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        min-height: 100vh;
+        height: 100%;
     }
     .div_menu_bar{
         display: flex;
@@ -26,7 +27,6 @@
         flex-grow: 1;
         background-color: #f1f1f1;
         padding: 16px 16px 0;
-        height: 100%;
     }
 </style>
 
@@ -51,8 +51,8 @@
 
 <script>
     import { goto } from '@roxi/routify';
-    import Icon_shop from "../component/icon/Icon_shop.svelte";
-    import Icon_box from "../component/icon/Icon_box.svelte";
+    import Icon_shop from "../../public/assets/component/icon/Icon_shop.svelte";
+    import Icon_box from "../../public/assets/component/icon/Icon_box.svelte";
 
     const menu_arr = [
         {menu_name: "가맹점 관리", menu_url: "/shop_list", icon: "shop"},
