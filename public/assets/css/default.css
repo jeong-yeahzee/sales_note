@@ -90,3 +90,11 @@ input:focus,button:focus,textarea:focus,select:focus{
     --ag-border-radius: 0px !important;
     --ag-wrapper-border-radius: 0px !important;
 }
+
+.grid_loading{
+    width: 48px;
+    height: 48px;
+    background-image: url("/public/assets/img/loading.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+}

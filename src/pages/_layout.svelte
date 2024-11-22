@@ -39,6 +39,7 @@
                     <Icon_shop/>
                 {:else if value.icon === "box"}
                     <Icon_box/>
+                {:else if value.icon === "discount"}
                 {/if}
                 <div>{value.menu_name}</div>
             </div>
@@ -57,6 +58,7 @@
     const menu_arr = [
         {menu_name: "가맹점 관리", menu_url: "/shop_list", icon: "shop"},
         {menu_name: "상품 관리", menu_url: "/product_list", icon: "box"},
+        {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "box"},
         {menu_name: "전표 등록", menu_url: "", icon: ""},
         {menu_name: "거래 내역", menu_url: "", icon: ""},
         {menu_name: "미수금 관리", menu_url: "", icon: ""}

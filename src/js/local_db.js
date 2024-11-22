@@ -3,7 +3,15 @@ export async function DB_L_SHOP(){
     const param = {
         type: "all",
         query: "SELECT * FROM SHOP_T;"
-    }
+    };
+    return await db_request(param);
+}
+
+export async function DB_L_PRODUCT(){
+    const param = {
+        type: "all",
+        query: "SELECT * FROM PRODUCT_T;"
+    };
     return await db_request(param);
 }
 
@@ -12,7 +20,7 @@ export async function DB_I_SHOP(){
         type: "run",
         query: "",
         value: []
-    }
+    };
     return await db_request(param);
 }
 

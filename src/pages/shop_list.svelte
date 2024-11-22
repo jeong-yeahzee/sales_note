@@ -32,7 +32,8 @@
     }
 
     .div_add_title{
-        background-color: green;
+        background-color: #5AB65A;
+        color: #FFFFFF !important;
     }
     .div_modal_header{
         width: 100%;
@@ -230,10 +231,9 @@
     import * as agGrid from "ag-grid-community";
     import "ag-grid-community/styles/ag-grid.css";
     import "ag-grid-community/styles/ag-theme-quartz.css";
+    import {grid_button_renderer_class} from "../js/grid_class.js";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
-    import {grid_button_renderer_class} from "../js/grid_class.js";
-
     import {DB_I_SHOP, DB_L_SHOP} from "../js/local_db.js";
     import {g_nvl, comma} from "../js/common.js";
 
@@ -254,7 +254,9 @@
     let shop_cnt = 0;
     // 거래처 정보 추가/수정 모달
     let shop_modal;
+    // 추가/수정인지 체크
     let modal_type = "";
+    // 추가/수정 하려는 거래처 정보
     let shop_obj = shop_schema();
     // 주소찾기 모달
     let zipcode_modal;
@@ -372,7 +374,9 @@
 
         const grid_options = {
             columnDefs: column_defs,
-            rowData: null
+            rowData: null,
+            overlayLoadingTemplate: "<div class='grid_loading'></div>",
+            overlayNoRowsTemplate: `<span>등록된 거래처가 없습니다.</span>`
         }
 
         grid_api = agGrid.createGrid(this_grid, grid_options);
