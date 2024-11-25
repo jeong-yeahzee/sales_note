@@ -15,6 +15,14 @@ export async function DB_L_PRODUCT(){
     return await db_request(param);
 }
 
+export async function DB_L_BRAND(){
+    const param = {
+        type: "all",
+        query: "SELECT * FROM BRAND_T ORDER BY BRAND_NAME;"
+    };
+    return await db_request(param);
+}
+
 export async function DB_I_SHOP(){
     const param = {
         type: "run",

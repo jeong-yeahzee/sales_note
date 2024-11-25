@@ -13,6 +13,7 @@
         justify-content: space-between;
         background-color: #FFFFFF;
         padding: 0 16px;
+        font-weight: 600;
     }
     .div_content{
         display: flex;
