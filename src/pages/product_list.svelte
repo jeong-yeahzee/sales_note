@@ -66,20 +66,34 @@
         display: flex;
         padding: 8px;
         width: 800px;
-        height: 500px;
+        height: 400px;
         gap: 16px;
     }
     .div_brand{
         display: grid;
-        grid-template-rows: 32px 1fr 32px;
+        grid-template-rows: 40px 1fr 48px;
         width: 312px;
         flex-shrink: 0;
     }
     .div_brand_add{
-
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+        font-weight: 700;
+        border: 1px solid #cee5c5;
+        background-color: #f5fff1;
+        color: #000000;
+    }
+    .div_brand_add:hover{
+        background-color: #a9dba9;
     }
     .div_brand_info{
-
+        display: grid;
+        grid-template-columns: 1fr 96px;
+        grid-template-rows: 24px 62px 24px 1fr;
+        padding: 24px 16px;
+        column-gap: 16px;
     }
     .div_brand_info .label{
         font-size: 14px;
@@ -107,12 +121,6 @@
         color: #000;
         resize: none;
     }
-    .div_brand_info .div_flex{
-        display: flex;
-        gap: 16px;
-        margin-top: 40px;
-        margin-bottom: 32px;
-    }
     .btn_close{
         display: flex;
         width: 32px;
@@ -137,7 +145,9 @@
         </div>
         <div>전체보기</div>
         {#each brand_arr as value}
-            <div>{value.BRAND_NAME}</div>
+            <div style="gap: 4px;padding-left: 24px;text-overflow: ellipsis;">
+                <Icon_chevron_right/>{value.BRAND_NAME}
+            </div>
         {/each}
     </div>
 
@@ -165,20 +175,19 @@
     <div slot="content" class="div_brand_modal">
         <div bind:this={this_brand_grid} class="ag-theme-quartz div_grid"></div>
         <div class="div_brand">
-            <div class="div_brand_add">브랜드 추가</div>
+            <div class="div_brand_add">+ 브랜드 추가</div>
             <div class="div_brand_info">
-                <div>브랜드 정보</div>
                 <div class="label">브랜드명</div>
-                <input type="text" bind:value={brand_obj.BRAND_NAME}>
                 <div class="label">상태</div>
+                <input type="text" bind:value={brand_obj.BRAND_NAME}>
                 <select bind:value={brand_obj.STATUS}>
                     <option value="1">사용</option>
                     <option value="0">미사용</option>
                 </select>
-                <div class="label">메모</div>
-                <textarea bind:value={brand_obj.MEMO}></textarea>
+                <div class="label" style="grid-column: 1 / span 2;">메모</div>
+                <textarea bind:value={brand_obj.MEMO} style="grid-column: 1 / span 2;"></textarea>
+                <div><button type="button" on:click={on_click_brand_save} class="btn_save">저장</button></div>
             </div>
-            <div class="div_brand_save"></div>
         </div>
     </div>
 </Modal>
@@ -189,17 +198,19 @@
     import * as agGrid from "ag-grid-community";
     import "ag-grid-community/styles/ag-grid.css";
     import "ag-grid-community/styles/ag-theme-quartz.css";
+    import Icon_chevron_right from "../../public/assets/component/icon/Icon_chevron_right.svelte";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Icon_setting from "../../public/assets/component/icon/Icon_setting.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
     import {grid_button_renderer_class} from "../js/grid_class.js";
     import {comma} from "../js/common.js";
-    import {DB_L_BRAND,DB_L_PRODUCT} from "../js/local_db.js";
+    import {DB_I_BRAND, DB_L_BRAND, DB_L_PRODUCT} from "../js/local_db.js";
 
     const brand_schema = ()=>({
         BRAND_NAME: "",
         ORDER_NO: "",
-        STATUS: "1"
+        STATUS: "1",
+        MEMO: ""
     });
 
     // 브랜드 목록
@@ -231,6 +242,26 @@
     // 브랜드 추가/삭제 모달 오픈
     function on_click_brand_modal(){
         brand_modal.show();
+    }
+
+    // 브랜드 추가/수정/삭제 모달
+    async function on_click_brand_save(){
+        // 저장시 브랜드명 확인
+        if(brand_obj.BRAND_NAME === ""){
+            return alert("브랜드명을 입력해주세요");
+        }
+
+        const result = await DB_I_BRAND(brand_obj);
+        if(result !== 1){
+            alert("브랜드 추가에 실패 했습니다.");
+        }
+
+        alert("브랜드가 추가되었습니다.");
+        // 모달값 초기화
+        brand_obj = brand_schema();
+        // 브랜드 정보 재조회
+        brand_arr = await DB_L_BRAND();
+        brand_grid_api.setGridOption("rowData", brand_arr);
     }
 
     // 추가 버튼 클릭시 > 상품 등록 모달 오픈
@@ -276,21 +307,27 @@
 
     // 브랜드 목록 그리드
     function brand_grid_options_init(){
-        const update_btn_renderer_params = {
-            inner_html: `<button class="btn_update btn_grid btn_blue">정보수정</button>`,
-            add_class: `.btn_update`,
-            function_name : grid_row_update,
-        };
         const column_defs = [
             {
-                flex:1,
-                cellRenderer: grid_button_renderer_class,
-                cellRendererParams: update_btn_renderer_params
+                headerName: "브랜드명",
+                field: "BRAND_NAME",
+                flex:1
             },
             {
-                headerName: "상품명",
-                field: "PRODUCT_NAME",
+                headerName: "메모",
+                field: "MEMO",
                 flex:1
+            },
+            {
+                headerName: "상태",
+                field: "STATUS",
+                flex:1,
+                cellRenderer: (param)=>{
+                    if(param.data === undefined){
+                        return "";
+                    }
+                    return param.value === 1 ? "사용" : "미사용";
+                }
             }
         ];
 

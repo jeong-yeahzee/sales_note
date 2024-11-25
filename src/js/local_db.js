@@ -23,6 +23,15 @@ export async function DB_L_BRAND(){
     return await db_request(param);
 }
 
+export async function DB_I_BRAND(data){
+    const param = {
+        type: "run",
+        query: "INSERT INTO BRAND_T (BRAND_NAME,STATUS,MEMO) VALUES (?,?,?);",
+        value: [data.BRAND_NAME, data.STATUS, data.MEMO]
+    };
+    return await db_request(param);
+}
+
 export async function DB_I_SHOP(){
     const param = {
         type: "run",
