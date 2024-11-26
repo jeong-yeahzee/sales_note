@@ -83,7 +83,7 @@ function create_table_query(){
   const shop_query = `CREATE TABLE IF NOT EXISTS SHOP_T (
                           SHOP_NO INTEGER PRIMARY KEY AUTOINCREMENT,
                           SHOP_NAME TEXT NOT NULL,
-                          STATUS INTEGER NOT NULL DEFAULT 1,
+                          STATUS TEXT NOT NULL DEFAULT '1',
                           BUSINESS_LICENSE TEXT NOT NULL,
                           TEL TEXT,
                           MOBILE TEXT,
@@ -100,7 +100,7 @@ function create_table_query(){
   const brand_query = `CREATE TABLE IF NOT EXISTS BRAND_T (
                           BRAND_NO INTEGER PRIMARY KEY AUTOINCREMENT,
                           BRAND_NAME TEXT NOT NULL,
-                          STATUS INTEGER NOT NULL DEFAULT 1,
+                          STATUS TEXT NOT NULL DEFAULT '1',
                           ORDER_NO INTEGER,
                           MEMO TEXT,
                           FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -114,8 +114,8 @@ function create_table_query(){
                         MEMO TEXT,
                         PRICE_IN INTEGER NOT NULL DEFAULT 0,
                         PRICE_OUT INTEGER NOT NULL DEFAULT 0,
-                        ORDER_NO TEXT,
-                        STATUS INTEGER NOT NULL DEFAULT 1,
+                        ORDER_NO INTEGER,
+                        STATUS TEXT NOT NULL DEFAULT '1',
                         FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                         );`;
@@ -125,7 +125,7 @@ function create_table_query(){
                         SHOP_NO INTEGER NOT NULL,
                         DISCOUNT_PERCENT INTEGER NOT NULL DEFAULT 0,
                         DISCOUNT_PRICE INTEGER NOT NULL DEFAULT 0,
-                        STATUS INTEGER NOT NULL DEFAULT 0,
+                        STATUS TEXT NOT NULL DEFAULT '0',
                         FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         PRIMARY KEY (BRAND_NO,PRODUCT_NO,SHOP_NO)
@@ -147,7 +147,7 @@ function create_table_query(){
                         SALES_DC_PRICE_OUT INTEGER NOT NULL,
                         TOTAL_SALES_PRICE_OUT INTEGER NOT NULL,
                         TOTAL_SALES_DC_PRICE_OUT INTEGER NOT NULL,
-                        SALES_TYPE INTEGER NOT NULL DEFAULT 1,
+                        SALES_TYPE TEXT NOT NULL DEFAULT '1',
                         SALES_DT TEXT NOT NULL,
                         FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -155,7 +155,7 @@ function create_table_query(){
 
   const payment_query = `CREATE TABLE IF NOT EXISTS PAYMENT_T (
                         PAY_NO INTEGER PRIMARY KEY AUTOINCREMENT,
-                        PAY_TYPE INTEGER NOT NULL DEFAULT 1,
+                        PAY_TYPE TEXT NOT NULL DEFAULT '1',
                         SHOP_NO INTEGER NOT NULL,
                         CASH_AMOUNT INTEGER,
                         CARD_AMOUNT INTEGER,

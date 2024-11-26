@@ -15,7 +15,6 @@
         display: flex;
         height: 32px;
         align-items: center;
-        justify-content: space-between;
         background-color: #FFFFFF;
         padding: 0 16px;
         cursor: pointer;
@@ -95,12 +94,6 @@
         padding: 24px 16px;
         column-gap: 16px;
     }
-    .div_brand_info .label{
-        font-size: 14px;
-        font-weight: 700;
-        color: #000;
-        margin-bottom: 4px;
-    }
     .div_brand_info input,
     .div_brand_info select{
         border: 1px solid #b1b1b1;
@@ -154,12 +147,12 @@
     <div class="div_right">
         <div class="div_title" style="flex-grow: 1;">
             <div>상품 관리</div>
-            <button type="button" on:click={on_click_add_product}>새 상품추가</button>
+            <button type="button" on:click={product_modal.show}>새 상품추가</button>
         </div>
         <div>
-            <button type="button" on:click={()=>{filter_type = ""}}>전체({comma(product_cnt)})</button>
-            <button type="button" on:click={()=>{filter_type = "1"}}>판매중</button>
-            <button type="button" on:click={()=>{filter_type = "0"}}>판매중단</button>
+            <button type="button">전체({comma(product_cnt)})</button>
+            <button type="button">판매중</button>
+            <button type="button">판매중단</button>
         </div>
         <div bind:this={this_product_grid} class="ag-theme-quartz div_grid"></div>
     </div>
@@ -167,7 +160,7 @@
 
 <Modal bind:modal={brand_modal}>
     <div slot="header" class="div_modal_header">
-        <span>브랜드 관리</span>
+        <span>브랜드</span>
         <button class="btn_close" on:click={brand_modal.hide}>
             <Icon_close/>
         </button>
@@ -175,20 +168,63 @@
     <div slot="content" class="div_brand_modal">
         <div bind:this={this_brand_grid} class="ag-theme-quartz div_grid"></div>
         <div class="div_brand">
-            <div class="div_brand_add">+ 브랜드 추가</div>
+            <div class="div_brand_add" on:click={on_click_brand_add}>+ 브랜드 추가</div>
             <div class="div_brand_info">
-                <div class="label">브랜드명</div>
-                <div class="label">상태</div>
-                <input type="text" bind:value={brand_obj.BRAND_NAME}>
+                <label>브랜드명</label>
+                <label>상태</label>
+                <input type="text" bind:value={brand_obj.BRAND_NAME} placeholder="24자 이하 입력">
                 <select bind:value={brand_obj.STATUS}>
                     <option value="1">사용</option>
                     <option value="0">미사용</option>
                 </select>
-                <div class="label" style="grid-column: 1 / span 2;">메모</div>
+                <label style="grid-column: 1 / span 2;">메모</label>
                 <textarea bind:value={brand_obj.MEMO} style="grid-column: 1 / span 2;"></textarea>
-                <div><button type="button" on:click={on_click_brand_save} class="btn_save">저장</button></div>
+                <div>
+                    <button type="button" on:click={on_click_brand_save} class="btn_save">저장</button>
+                    {#if brand_obj.BRAND_NO !== ""}
+                        <button type="button" on:click={on_click_brand_delete} class="btn_delete">삭제</button>
+                    {/if}
+                </div>
             </div>
         </div>
+    </div>
+</Modal>
+<Modal bind:modal={product_modal}>
+    <div slot="header" class="div_modal_header">
+        <span>상품</span>
+        <button class="btn_close" on:click={product_modal.hide}>
+            <Icon_close/>
+        </button>
+    </div>
+    <div slot="content" class="div_product_modal">
+        <label>브랜드</label>
+        <select bind:value={product_obj.BRAND_NO}>
+            <option value="">선택</option>
+            {#each brand_arr as value}
+                <option value={value.BRAND_NO}>{value.BRAND_NAME}</option>
+            {/each}
+        </select>
+        <label>상품명</label>
+        <input type="text" bind:value={product_obj.PRODUCT_NAME}>
+        <label>매입가</label>
+        <input type="text" bind:value={product_obj.PRICE_IN}>
+        <label>판매가</label>
+        <input type="text" bind:value={product_obj.PRICE_OUT}>
+        <label>정렬순서</label>
+        <input type="text" bind:value={product_obj.ORDER_NO}>
+        <label>상태</label>
+        <select bind:value={product_obj.STATUS}>
+            <option value="1">판매중</option>
+            <option value="0">판매중단</option>
+        </select>
+        <label>메모</label>
+        <textarea bind:value={product_obj.MEMO}></textarea>
+        {#if product_obj.PRODUCT_NO === ""}
+            <button type="button" on:click={on_click_product_save}>추가</button>
+        {:else}
+            <button type="button" on:click={on_click_product_save}>수정</button>
+            <button type="button" on:click={on_click_product_delete}>삭제</button>
+        {/if}
     </div>
 </Modal>
 
@@ -203,11 +239,27 @@
     import Icon_setting from "../../public/assets/component/icon/Icon_setting.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
     import {grid_button_renderer_class} from "../js/grid_class.js";
-    import {comma} from "../js/common.js";
-    import {DB_I_BRAND, DB_L_BRAND, DB_L_PRODUCT} from "../js/local_db.js";
+    import {byte_check, comma, validate_emojis} from "../js/common.js";
+    import {
+        DB_I_BRAND, DB_L_BRAND,
+        DB_L_PRODUCT, DB_U_BRAND,
+        DB_D_BRAND, DB_I_PRODUCT,
+        DB_U_PRODUCT, DB_D_PRODUCT
+    } from "../js/local_db.js";
 
     const brand_schema = ()=>({
+        BRAND_NO: "",
         BRAND_NAME: "",
+        ORDER_NO: "",
+        STATUS: "1",
+        MEMO: ""
+    });
+    const product_schema = ()=>({
+        BRAND_NO: "",
+        PRODUCT_NO: "",
+        PRODUCT_NAME: "",
+        PRICE_IN: 0,
+        PRICE_OUT: 0,
         ORDER_NO: "",
         STATUS: "1",
         MEMO: ""
@@ -216,12 +268,18 @@
     // 브랜드 목록
     let brand_arr = [];
     // 조회 타입
-    let filter_type = "";
+    let filter_obj = {
+        brand: "",
+        type: ""
+    };
     // 총 상품 수량
     let product_cnt = 0;
     // 브랜드 관리 모달
     let brand_modal;
     let brand_obj = brand_schema();
+    // 상품 관리 모달
+    let product_modal;
+    let product_obj = product_schema();
     // 브랜드 그리드
     let this_brand_grid, brand_grid_api;
     // 상품 그리드
@@ -231,32 +289,59 @@
         product_grid_options_init();
         brand_grid_options_init();
 
-        const result = await DB_L_PRODUCT();
-        product_cnt = result.length;
-        product_grid_api.setGridOption("rowData", result);
-
-        brand_arr = await DB_L_BRAND();
-        brand_grid_api.setGridOption("rowData", brand_arr);
+        await get_product();
+        await get_brand();
     });
 
-    // 브랜드 추가/삭제 모달 오픈
+    // 브랜드 추가/수정/삭제 모달 오픈
     function on_click_brand_modal(){
         brand_modal.show();
     }
 
-    // 브랜드 추가/수정/삭제 모달
+    // 브랜드 추가 버튼 클릭시
+    function on_click_brand_add(){
+        // 브랜드 정보 블럭 초기화
+        brand_obj = brand_schema();
+        brand_grid_api.setGridOption("deselectAll");
+    }
+
+    // 브랜드 저장 버튼 클릭시 > 수정/추가
     async function on_click_brand_save(){
         // 저장시 브랜드명 확인
         if(brand_obj.BRAND_NAME === ""){
-            return alert("브랜드명을 입력해주세요");
+            return alert("브랜드명을 입력해주세요.");
         }
 
-        const result = await DB_I_BRAND(brand_obj);
-        if(result !== 1){
-            alert("브랜드 추가에 실패 했습니다.");
+        // 브랜드명은 최대 24자까지만 입력가능
+        if(brand_obj.BRAND_NAME.length > 24){
+            return alert("브랜드명은 24자 이하만 입력가능합니다.");
         }
 
-        alert("브랜드가 추가되었습니다.");
+        // 브랜드명에 이모지 입력 불가
+        if(validate_emojis(brand_obj.BRAND_NAME)){
+            return alert("이모티콘은 입력 불가능합니다.");
+        }
+
+        // 메모는 2000byte 이하만 입력가능
+        if(byte_check(brand_obj.MEMO) > 2000){
+            return alert("메모는 약 670자 이내로 입력가능합니다.");
+        }
+
+        let result = false;
+
+        if(brand_obj.BRAND_NO === ""){
+            result = await DB_I_BRAND(brand_obj);
+        }else{
+            result = await DB_U_BRAND(brand_obj);
+        }
+
+        // DB 저장 오류일때
+        if(!result || result !== 1){
+            return alert("저장 실패\n재시도 부탁드립니다.");
+        }
+
+
+        alert("저장되었습니다.");
         // 모달값 초기화
         brand_obj = brand_schema();
         // 브랜드 정보 재조회
@@ -264,14 +349,109 @@
         brand_grid_api.setGridOption("rowData", brand_arr);
     }
 
+    // 브랜드 삭제 버튼 클릭시
+    async function on_click_brand_delete(){
+        if(confirm("브랜드를 삭제하시겠습니까?")){
+            const result = await DB_D_BRAND(brand_obj);
+
+            // DB 저장 실행일때
+            if(!result || result !== 1){
+                return alert("삭제 실패\n재시도 부탁드립니다.");
+            }
+
+            alert("삭제되었습니다.\n(삭제한 데이터는 휴지통 메뉴에서 복구 가능합니다.)");
+            // 모달값 초기화
+            brand_obj = brand_schema();
+            // 브랜드 정보 재조회
+            await get_brand();
+        }
+    }
+
     // 추가 버튼 클릭시 > 상품 등록 모달 오픈
     async function on_click_add_product(){
 
     }
 
+    // 상품 모달에서 저장 버튼 클릭시
+    async function on_click_product_save(){
+        // 상품명 확인
+        if(product_obj.PRODUCT_NAME === ""){
+            return alert("상품명을 입력해주세요.");
+        }
+
+        // 상품명 최대 34자 이하만 입력가능
+        if(product_obj.PRODUCT_NAME.length > 34){
+            return alert("상품명은 34자 이하만 입력가능합니다.");
+        }
+
+        // 상품명에 이모지 입력불가
+        if(validate_emojis(product_obj.PRODUCT_NAME)){
+            return alert("이모티콘은 입력 불가능합니다.");
+        }
+
+        // 메모는 2000byte 이하만 입력가능
+        if(byte_check(product_obj.MEMO) > 2000){
+            return alert("메모는 약 670자 이내로 입력가능합니다.");
+        }
+
+        let result = false;
+
+        if(product_obj.PRODUCT_NO === ""){
+            result = await DB_I_PRODUCT(product_obj);
+        }else{
+            result = await DB_U_PRODUCT(product_obj);
+        }
+
+        // DB 저장 오류일때
+        if(!result || result !== 1){
+            return alert("저장 실패\n재시도 부탁드립니다.");
+        }
+
+
+        alert("저장되었습니다.");
+        // 모달값 초기화
+        product_obj = product_schema();
+        // 상품정보 재조회
+        await get_product();
+    }
+
+    // 상품 모달에서 삭제 버튼 클릭시
+    async function on_click_product_delete(){
+        if(confirm("상품은 삭제하시겠습니까?")){
+            const result = await DB_D_PRODUCT(product_obj);
+
+            // DB 저장 실행일때
+            if(!result || result !== 1){
+                return alert("삭제 실패\n재시도 부탁드립니다.");
+            }
+
+            alert("삭제되었습니다.\n(삭제한 데이터는 휴지통 메뉴에서 복구 가능합니다.)");
+            // 모달값 초기화
+            product_obj = product_schema();
+            // 모달 닫기
+            product_modal.hide();
+            // 상품 정보 재조회
+            await get_product();
+        }
+    }
+
+    // 상품정보 가져오기
+    async function get_product(){
+        const result = await DB_L_PRODUCT();
+        product_cnt = result.length;
+        product_grid_api.setGridOption("rowData", result);
+    }
+
+    // 브랜드정보 가져오기
+    async function get_brand(){
+        brand_arr = await DB_L_BRAND();
+        brand_grid_api.setGridOption("rowData", brand_arr);
+    }
+
     // 그리드의 정보 수정 버튼 클릭시
     function grid_row_update(data){
-
+        product_obj = data;
+        product_modal.show();
     }
 
     // 상품 목록 그리드
@@ -326,17 +506,29 @@
                     if(param.data === undefined){
                         return "";
                     }
-                    return param.value === 1 ? "사용" : "미사용";
+                    return param.value === "1" ? "사용" : "미사용";
                 }
             }
         ];
 
         const grid_options = {
             columnDefs: column_defs,
+            rowSelection: {
+                mode: "singleRow",
+                checkboxes: false,
+                enableClickSelection: true
+            },
             rowData: null,
             loading: false,
             overlayLoadingTemplate: "<div class='grid_loading'></div>",
-            overlayNoRowsTemplate: `<span>등록된 브랜드가 없습니다.</span>`
+            overlayNoRowsTemplate: `<span>등록된 브랜드가 없습니다.</span>`,
+            onRowSelected(event) {
+                if(event.node.data === undefined){
+                    return;
+                }
+                // 브랜드 선택시 정보 블럭에 보여주기
+                brand_obj = event.node.data;
+            }
         }
 
         brand_grid_api = agGrid.createGrid(this_brand_grid, grid_options);
