@@ -1,19 +1,12 @@
 
-/**
- * 빈값 체크
- * @param text
- * @param rText
- * @returns {string}
- */
+/** 빈값 체크 */
 export function g_nvl(text, replace_text) {
     if (text === null || text === undefined) text = "";
     if (replace_text !== null && replace_text !== undefined && text === "") text = replace_text;
     return text;
 }
 
-/**
- * 콤마찍기
- */
+/** 콤마찍기 */
 export function comma(str) {
     str = String(Number(String(g_nvl(str, "0")).replace(/[^0-9-]/g,"")));
     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
@@ -22,9 +15,6 @@ export function comma(str) {
 /**
  * 콤마풀기
  * null_allowed_flag에 따라 return을 0 or ""로 함.
- * @param str
- * @param null_flag
- * @returns {string|number}
  */
 export function uc(str, null_flag) {
     if(str == "" || str == null){
@@ -64,4 +54,30 @@ export function byte_check(text) {
         }
     }
     return byte;
+}
+
+/**
+ * 끝에서 세자리 수마다 콤마(,) 찍어준다.
+ * 예) 1234567 => 1,234,567
+ */
+export function number_formatter(params) {
+    // 그리드일때
+    if(params.value !== undefined) {
+        return Math.floor(params.value).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+    }
+
+    // 그리드 아닐때
+    if(!isNaN(params)){
+        return Math.floor(params).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+    }
+}
+
+/** array > object 변환 */
+export function arr_to_obj(arr, key){
+    const obj = {};
+    for(const value of arr){
+        obj[value[key]] = value;
+    }
+
+    return obj;
 }

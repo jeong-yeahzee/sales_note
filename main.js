@@ -8,7 +8,7 @@ const db_path = path.join(__dirname, "sales_note_db.sqlite");
 // 데이터베이스 연결 (없으면 자동 생성됨)
 const db = new sqlite3.Database(db_path);
 
-app.on("ready", ()=>{
+app.on("ready", async ()=>{
   main_window = new BrowserWindow({
     width: 1024,
     height: 768,
@@ -25,11 +25,12 @@ app.on("ready", ()=>{
   // 개발자 도구 열기
   main_window.webContents.openDevTools();
 
+  // 데이터베이스 초기화
+  await init_db();
+
   // 보여줄 화면
   main_window.loadURL('http://localhost:3000');
 
-  // 데이터베이스 초기화 (테이블 생성)
-  init_db();
 });
 
 app.on("window-all-closed", () => {
@@ -64,18 +65,33 @@ ipcMain.handle('db-run', (event, param) => {
   });
 });
 
-// 데이터베이스 초기화 (테이블 생성)
-function init_db(){
-  const query = create_table_query();
+// 데이터베이스 초기화 (테이블 생성/트리거 생성)
+// 데이터베이스 초기화 (테이블 생성/트리거 생성)
+async function init_db(){
+  const table = create_table_query();
   const trigger = create_trigger_query();
 
   // 여러 테이블을 한 번에 생성
-  db.exec(query+trigger, (err) => {
-    if (err) {
-      console.error('테이블 생성 실패:', err);
-    } else {
-      console.log('테이블들이 성공적으로 생성되었습니다.');
-    }
+  return new Promise((resolve, reject) => {
+    db.exec(table, (err) => {
+      if (err) {
+        console.error("[TABLE_CREATE_FAIL]", err);
+        reject(err);
+      } else {
+        console.log("[TABLE_CREATE_SUCCESS]");
+
+        // 여러 트리거 한 번에 생성
+        db.exec(trigger, (err) => {
+          if (err) {
+            console.error("[TRIGGER_CREATE_FAIL]", err);
+            reject(err);
+          } else {
+            console.log("[TRIGGER_CREATE_SUCCESS]");
+            resolve(); // 데이터베이스 초기화 완료
+          }
+        });
+      }
+    });
   });
 }
 
@@ -263,7 +279,7 @@ const backup_payment = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_PAYMENT (
 // 트리거 생성하는 쿼리
 function create_trigger_query(){
   const shop_delete = `
-    CREATE TRIGGER TRIG_TLB_SHOP
+    CREATE TRIGGER IF NOT EXISTS TRIG_TLB_SHOP
     BEFORE DELETE ON TBL_SHOP
     FOR EACH ROW
     BEGIN
@@ -285,24 +301,24 @@ function create_trigger_query(){
         )
         VALUES (
           OLD.SHOP_NO,
-        OLD.SHOP_NAME,
-        OLD.STATUS,
-        OLD.BUSINESS_LICENSE,
-        OLD.TEL,
-        OLD.MOBILE,
-        OLD.EMAIL,
-        OLD.ADDRESS1,
-        OLD.ADDRESS2,
-        OLD.ZIPCODE,
-        OLD.CEO_NAME,
-        OLD.MEMO,
-        OLD.FIRST_CREATE_DT,
-        OLD.LAST_UPDATE_DT
+          OLD.SHOP_NAME,
+          OLD.STATUS,
+          OLD.BUSINESS_LICENSE,
+          OLD.TEL,
+          OLD.MOBILE,
+          OLD.EMAIL,
+          OLD.ADDRESS1,
+          OLD.ADDRESS2,
+          OLD.ZIPCODE,
+          OLD.CEO_NAME,
+          OLD.MEMO,
+          OLD.FIRST_CREATE_DT,
+          OLD.LAST_UPDATE_DT
         );
     END;`;
 
   const brand_delete = `
-    CREATE TRIGGER TRIG_TLB_BRAND
+    CREATE TRIGGER IF NOT EXISTS TRIG_TLB_BRAND
     BEFORE DELETE ON TBL_BRAND
     FOR EACH ROW
     BEGIN
@@ -327,7 +343,7 @@ function create_trigger_query(){
     END;`;
 
   const product_delete = `
-    CREATE TRIGGER TRIG_TBL_PRODUCT
+    CREATE TRIGGER IF NOT EXISTS TRIG_TBL_PRODUCT
     BEFORE DELETE ON TBL_PRODUCT
     FOR EACH ROW
     BEGIN
@@ -358,7 +374,7 @@ function create_trigger_query(){
     END;`;
 
   const sales_delete = `
-    CREATE TRIGGER TRIG_TBL_SALES
+    CREATE TRIGGER IF NOT EXISTS TRIG_TBL_SALES
     BEFORE DELETE ON TBL_SALES
     FOR EACH ROW
     BEGIN
@@ -407,7 +423,7 @@ function create_trigger_query(){
     END;`;
 
   const payment_delete = `
-    CREATE TRIGGER TRIG_TBL_PAYMENT
+    CREATE TRIGGER IF NOT EXISTS TRIG_TBL_PAYMENT
     BEFORE DELETE ON TBL_PAYMENT
     FOR EACH ROW
     BEGIN
