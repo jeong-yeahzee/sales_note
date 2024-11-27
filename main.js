@@ -67,9 +67,10 @@ ipcMain.handle('db-run', (event, param) => {
 // 데이터베이스 초기화 (테이블 생성)
 function init_db(){
   const query = create_table_query();
+  const trigger = create_trigger_query();
 
   // 여러 테이블을 한 번에 생성
-  db.exec(query, (err) => {
+  db.exec(query+trigger, (err) => {
     if (err) {
       console.error('테이블 생성 실패:', err);
     } else {
@@ -80,60 +81,145 @@ function init_db(){
 
 // 테이블 생성하는 쿼리
 function create_table_query(){
-  const shop_query = `CREATE TABLE IF NOT EXISTS SHOP_T (
-                          SHOP_NO INTEGER PRIMARY KEY AUTOINCREMENT,
-                          SHOP_NAME TEXT NOT NULL,
-                          STATUS TEXT NOT NULL DEFAULT '1',
-                          BUSINESS_LICENSE TEXT NOT NULL,
-                          TEL TEXT,
-                          MOBILE TEXT,
-                          EMAIL TEXT,
-                          ADDRESS1 TEXT,
-                          ADDRESS2 TEXT,
-                          ZIPCODE TEXT,
-                          CEO_NAME TEXT,
-                          MEMO TEXT,
-                          FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                          LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        );`;
+  const shop = `CREATE TABLE IF NOT EXISTS TBL_SHOP (
+                  SHOP_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                  SHOP_NAME TEXT NOT NULL,
+                  STATUS TEXT NOT NULL DEFAULT '1',
+                  BUSINESS_LICENSE TEXT NOT NULL,
+                  TEL TEXT,
+                  MOBILE TEXT,
+                  EMAIL TEXT,
+                  ADDRESS1 TEXT,
+                  ADDRESS2 TEXT,
+                  ZIPCODE TEXT,
+                  CEO_NAME TEXT,
+                  MEMO TEXT,
+                  FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );`;
 
-  const brand_query = `CREATE TABLE IF NOT EXISTS BRAND_T (
-                          BRAND_NO INTEGER PRIMARY KEY AUTOINCREMENT,
-                          BRAND_NAME TEXT NOT NULL,
-                          STATUS TEXT NOT NULL DEFAULT '1',
-                          ORDER_NO INTEGER,
-                          MEMO TEXT,
-                          FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                          LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        );`;
+const brand = `CREATE TABLE IF NOT EXISTS TBL_BRAND (
+                BRAND_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                BRAND_NAME TEXT NOT NULL,
+                STATUS TEXT NOT NULL DEFAULT '1',
+                ORDER_NO INTEGER,
+                MEMO TEXT,
+                FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+              );`;
 
-  const product_query = `CREATE TABLE IF NOT EXISTS PRODUCT_T (
-                        BRAND_NO INTEGER,
-                        PRODUCT_NO INTEGER PRIMARY KEY AUTOINCREMENT,
-                        PRODUCT_NAME TEXT NOT NULL,
-                        MEMO TEXT,
-                        PRICE_IN INTEGER NOT NULL DEFAULT 0,
-                        PRICE_OUT INTEGER NOT NULL DEFAULT 0,
-                        ORDER_NO INTEGER,
-                        STATUS TEXT NOT NULL DEFAULT '1',
-                        FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        );`;
-  const dc_query = `CREATE TABLE IF NOT EXISTS PRODUCT_DC_T (
+const product = `CREATE TABLE IF NOT EXISTS TBL_PRODUCT (
+                  BRAND_NO INTEGER,
+                  PRODUCT_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                  PRODUCT_NAME TEXT NOT NULL,
+                  MEMO TEXT,
+                  PRICE_IN INTEGER NOT NULL DEFAULT 0,
+                  PRICE_OUT INTEGER NOT NULL DEFAULT 0,
+                  ORDER_NO INTEGER,
+                  STATUS TEXT NOT NULL DEFAULT '1',
+                  FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                  );`;
+
+const dc = `CREATE TABLE IF NOT EXISTS TBL_PRODUCT_DC (
+              BRAND_NO INTEGER NOT NULL,
+              PRODUCT_NO INTEGER NOT NULL,
+              SHOP_NO INTEGER NOT NULL,
+              DISCOUNT_PERCENT INTEGER NOT NULL DEFAULT 0,
+              DISCOUNT_PRICE INTEGER NOT NULL DEFAULT 0,
+              STATUS TEXT NOT NULL DEFAULT '0',
+              FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (BRAND_NO,PRODUCT_NO,SHOP_NO)
+              );`;
+
+const sales = `CREATE TABLE IF NOT EXISTS TBL_SALES (
+                MASTER_NO INTEGER NOT NULL,
+                SALES_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                SHOP_NO INTEGER NOT NULL,
+                SHOP_NAME TEXT NOT NULL,
+                BRAND_NO INTEGER NOT NULL,
+                BRAND_NAME TEXT NOT NULL,
+                PRODUCT_NO INTEGER NOT NULL,
+                PRODUCT_NAME TEXT NOT NULL,
+                SALES_COUNT INTEGER NOT NULL,
+                DISCOUNT_PERCENT INTEGER NOT NULL DEFAULT 0,
+                DISCOUNT_PRICE INTEGER NOT NULL DEFAULT 0,
+                SALES_PRICE_OUT INTEGER NOT NULL,
+                SALES_DC_PRICE_OUT INTEGER NOT NULL,
+                TOTAL_SALES_PRICE_OUT INTEGER NOT NULL,
+                TOTAL_SALES_DC_PRICE_OUT INTEGER NOT NULL,
+                SALES_TYPE TEXT NOT NULL DEFAULT '1',
+                SALES_DT TEXT NOT NULL,
+                FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                );`;
+
+const payment = `CREATE TABLE IF NOT EXISTS TBL_PAYMENT (
+                  PAY_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                  PAY_TYPE TEXT NOT NULL DEFAULT '1',
+                  SHOP_NO INTEGER NOT NULL,
+                  CASH_AMOUNT INTEGER,
+                  CARD_AMOUNT INTEGER,
+                  DISCOUNT_AMOUNT INTEGER,
+                  PAYMENT_AMOUNT INTEGER,
+                  ADMIN_AMOUNT INTEGER,
+                  MEMO TEXT,
+                  PAY_DT TEXT NOT NULL,
+                  FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                  );`;
+
+const backup_shop = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_SHOP (
+                      DELETE_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                      SHOP_NO INTEGER NOT NULL,
+                      SHOP_NAME TEXT NOT NULL,
+                      STATUS TEXT NOT NULL,
+                      BUSINESS_LICENSE TEXT NOT NULL,
+                      TEL TEXT,
+                      MOBILE TEXT,
+                      EMAIL TEXT,
+                      ADDRESS1 TEXT,
+                      ADDRESS2 TEXT,
+                      ZIPCODE TEXT,
+                      CEO_NAME TEXT,
+                      MEMO TEXT,
+                      FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                      LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                      DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );`;
+
+const backup_brand = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_BRAND (
+                        DELETE_NO INTEGER PRIMARY KEY AUTOINCREMENT,
                         BRAND_NO INTEGER NOT NULL,
-                        PRODUCT_NO INTEGER NOT NULL,
-                        SHOP_NO INTEGER NOT NULL,
-                        DISCOUNT_PERCENT INTEGER NOT NULL DEFAULT 0,
-                        DISCOUNT_PRICE INTEGER NOT NULL DEFAULT 0,
-                        STATUS TEXT NOT NULL DEFAULT '0',
+                        BRAND_NAME TEXT NOT NULL,
+                        STATUS TEXT NOT NULL,
+                        ORDER_NO INTEGER,
+                        MEMO TEXT,
                         FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        PRIMARY KEY (BRAND_NO,PRODUCT_NO,SHOP_NO)
+                        DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                      );`;
+
+const backup_product = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_PRODUCT (
+                          DELETE_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                          BRAND_NO INTEGER,
+                          PRODUCT_NO INTEGER NOT NULL,
+                          PRODUCT_NAME TEXT NOT NULL,
+                          MEMO TEXT,
+                          PRICE_IN INTEGER NOT NULL,
+                          PRICE_OUT INTEGER NOT NULL,
+                          ORDER_NO INTEGER,
+                          STATUS TEXT NOT NULL,
+                          FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                         );`;
 
-  const sales_query = `CREATE TABLE IF NOT EXISTS SALES_T (
+const backup_sales = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_SALES (
+                        DELETE_NO INTEGER PRIMARY KEY AUTOINCREMENT,
                         MASTER_NO INTEGER NOT NULL,
-                        SALES_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                        SALES_NO INTEGER NOT NULL,
                         SHOP_NO INTEGER NOT NULL,
                         SHOP_NAME TEXT NOT NULL,
                         BRAND_NO INTEGER NOT NULL,
@@ -141,32 +227,219 @@ function create_table_query(){
                         PRODUCT_NO INTEGER NOT NULL,
                         PRODUCT_NAME TEXT NOT NULL,
                         SALES_COUNT INTEGER NOT NULL,
-                        DISCOUNT_PERCENT INTEGER NOT NULL DEFAULT 0,
-                        DISCOUNT_PRICE INTEGER NOT NULL DEFAULT 0,
+                        DISCOUNT_PERCENT INTEGER NOT NULL,
+                        DISCOUNT_PRICE INTEGER NOT NULL,
                         SALES_PRICE_OUT INTEGER NOT NULL,
                         SALES_DC_PRICE_OUT INTEGER NOT NULL,
                         TOTAL_SALES_PRICE_OUT INTEGER NOT NULL,
                         TOTAL_SALES_DC_PRICE_OUT INTEGER NOT NULL,
-                        SALES_TYPE TEXT NOT NULL DEFAULT '1',
+                        SALES_TYPE TEXT NOT NULL,
                         SALES_DT TEXT NOT NULL,
                         FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                        LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                      );`;
+
+const backup_payment = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_PAYMENT (
+                          DELETE_NO INTEGER PRIMARY KEY AUTOINCREMENT,
+                          PAY_NO INTEGER NOT NULL,
+                          PAY_TYPE TEXT NOT NULL,
+                          SHOP_NO INTEGER NOT NULL,
+                          CASH_AMOUNT INTEGER,
+                          CARD_AMOUNT INTEGER,
+                          DISCOUNT_AMOUNT INTEGER,
+                          PAYMENT_AMOUNT INTEGER,
+                          ADMIN_AMOUNT INTEGER,
+                          MEMO TEXT,
+                          PAY_DT TEXT NOT NULL,
+                          FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                         );`;
 
-  const payment_query = `CREATE TABLE IF NOT EXISTS PAYMENT_T (
-                        PAY_NO INTEGER PRIMARY KEY AUTOINCREMENT,
-                        PAY_TYPE TEXT NOT NULL DEFAULT '1',
-                        SHOP_NO INTEGER NOT NULL,
-                        CASH_AMOUNT INTEGER,
-                        CARD_AMOUNT INTEGER,
-                        DISCOUNT_AMOUNT INTEGER,
-                        PAYMENT_AMOUNT INTEGER,
-                        ADMIN_AMOUNT INTEGER,
-                        MEMO TEXT,
-                        PAY_DT TEXT NOT NULL,
-                        FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        );`;
+  return shop+brand+product+dc+sales+payment+backup_shop+backup_brand+backup_product+backup_sales+backup_payment;
+}
 
-  return shop_query+brand_query+product_query+dc_query+sales_query+payment_query;
+// 트리거 생성하는 쿼리
+function create_trigger_query(){
+  const shop_delete = `
+    CREATE TRIGGER TRIG_TLB_SHOP
+    BEFORE DELETE ON TBL_SHOP
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO BACKUP_TBL_SHOP (
+          SHOP_NO,
+          SHOP_NAME,
+          STATUS,
+          BUSINESS_LICENSE,
+          TEL,
+          MOBILE,
+          EMAIL,
+          ADDRESS1,
+          ADDRESS2,
+          ZIPCODE,
+          CEO_NAME,
+          MEMO,
+          FIRST_CREATE_DT,
+          LAST_UPDATE_DT
+        )
+        VALUES (
+          OLD.SHOP_NO,
+        OLD.SHOP_NAME,
+        OLD.STATUS,
+        OLD.BUSINESS_LICENSE,
+        OLD.TEL,
+        OLD.MOBILE,
+        OLD.EMAIL,
+        OLD.ADDRESS1,
+        OLD.ADDRESS2,
+        OLD.ZIPCODE,
+        OLD.CEO_NAME,
+        OLD.MEMO,
+        OLD.FIRST_CREATE_DT,
+        OLD.LAST_UPDATE_DT
+        );
+    END;`;
+
+  const brand_delete = `
+    CREATE TRIGGER TRIG_TLB_BRAND
+    BEFORE DELETE ON TBL_BRAND
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO BACKUP_TBL_BRAND (
+          BRAND_NO,
+          BRAND_NAME,
+          STATUS,
+          ORDER_NO,
+          MEMO,
+          FIRST_CREATE_DT,
+          LAST_UPDATE_DT
+        )
+        VALUES (
+          OLD.BRAND_NO,
+          OLD.BRAND_NAME,
+          OLD.STATUS,
+          OLD.ORDER_NO,
+          OLD.MEMO,
+          OLD.FIRST_CREATE_DT,
+          OLD.LAST_UPDATE_DT
+        );
+    END;`;
+
+  const product_delete = `
+    CREATE TRIGGER TRIG_TBL_PRODUCT
+    BEFORE DELETE ON TBL_PRODUCT
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO BACKUP_TBL_PRODUCT (
+          BRAND_NO,
+          PRODUCT_NO,
+          PRODUCT_NAME,
+          MEMO,
+          PRICE_IN,
+          PRICE_OUT,
+          ORDER_NO,
+          STATUS,
+          FIRST_CREATE_DT,
+          LAST_UPDATE_DT
+        )
+        VALUES (
+          OLD.BRAND_NO,
+          OLD.PRODUCT_NO,
+          OLD.PRODUCT_NAME,
+          OLD.MEMO,
+          OLD.PRICE_IN,
+          OLD.PRICE_OUT,
+          OLD.ORDER_NO,
+          OLD.STATUS,
+          OLD.FIRST_CREATE_DT,
+          OLD.LAST_UPDATE_DT
+        );
+    END;`;
+
+  const sales_delete = `
+    CREATE TRIGGER TRIG_TBL_SALES
+    BEFORE DELETE ON TBL_SALES
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO BACKUP_TBL_SALES (
+          MASTER_NO,
+          SALES_NO,
+          SHOP_NO,
+          SHOP_NAME,
+          BRAND_NO,
+          BRAND_NAME,
+          PRODUCT_NO,
+          PRODUCT_NAME,
+          SALES_COUNT,
+          DISCOUNT_PERCENT,
+          DISCOUNT_PRICE,
+          SALES_PRICE_OUT,
+          SALES_DC_PRICE_OUT,
+          TOTAL_SALES_PRICE_OUT,
+          TOTAL_SALES_DC_PRICE_OUT,
+          SALES_TYPE,
+          SALES_DT,
+          FIRST_CREATE_DT,
+          LAST_UPDATE_DT
+        )
+        VALUES (
+          OLD.MASTER_NO,
+          OLD.SALES_NO,
+          OLD.SHOP_NO,
+          OLD.SHOP_NAME,
+          OLD.BRAND_NO,
+          OLD.BRAND_NAME,
+          OLD.PRODUCT_NO,
+          OLD.PRODUCT_NAME,
+          OLD.SALES_COUNT,
+          OLD.DISCOUNT_PERCENT,
+          OLD.DISCOUNT_PRICE,
+          OLD.SALES_PRICE_OUT,
+          OLD.SALES_DC_PRICE_OUT,
+          OLD.TOTAL_SALES_PRICE_OUT,
+          OLD.TOTAL_SALES_DC_PRICE_OUT,
+          OLD.SALES_TYPE,
+          OLD.SALES_DT,
+          OLD.FIRST_CREATE_DT,
+          OLD.LAST_UPDATE_DT
+        );
+    END;`;
+
+  const payment_delete = `
+    CREATE TRIGGER TRIG_TBL_PAYMENT
+    BEFORE DELETE ON TBL_PAYMENT
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO BACKUP_TBL_PAYMENT (
+          PAY_NO,
+          PAY_TYPE,
+          SHOP_NO,
+          CASH_AMOUNT,
+          CARD_AMOUNT,
+          DISCOUNT_AMOUNT,
+          PAYMENT_AMOUNT,
+          ADMIN_AMOUNT,
+          MEMO,
+          PAY_DT,
+          FIRST_CREATE_DT,
+          LAST_UPDATE_DT
+        )
+        VALUES (
+          OLD.PAY_NO,
+          OLD.PAY_TYPE,
+          OLD.SHOP_NO,
+          OLD.CASH_AMOUNT,
+          OLD.CARD_AMOUNT,
+          OLD.DISCOUNT_AMOUNT,
+          OLD.PAYMENT_AMOUNT,
+          OLD.ADMIN_AMOUNT,
+          OLD.MEMO,
+          OLD.PAY_DT,
+          OLD.FIRST_CREATE_DT,
+          OLD.LAST_UPDATE_DT
+        );
+    END;`;
+
+  return shop_delete+brand_delete+product_delete+sales_delete+payment_delete;
 }
