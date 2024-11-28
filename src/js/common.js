@@ -72,6 +72,34 @@ export function number_formatter(params) {
     }
 }
 
+/** 사업자번호 형식 변환 */
+export function business_license_formatter(text){
+    let only_num_str = text.replaceAll(/[^0-9]/g, '');
+    if (only_num_str.length === 10) {
+        return only_num_str.replace(/^(\d{3})(\d{2})(\d{5})$/, `$1-$2-$3`);
+    } else {
+        return text.replaceAll(/[^0-9-]/g, '');
+    }
+}
+
+/** 전화번호 형식 변환 */
+export function tel_formatter(text) {
+    let only_num_str = text.replaceAll(/[^0-9]/g, '');
+    if ( Number(only_num_str.slice(0, 1)) !== 0 && Number(only_num_str.slice(0, 1)) !== 1) {
+        return "";
+    } else if ( only_num_str.slice(0, 2) === "02" ) {
+        return only_num_str.replace(/^(\d{2})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
+    } else if ( only_num_str.length == 8 ) {
+        return only_num_str.replace(/^(\d{4})(\d{4})$/, `$1-$2`);
+    } else if ( only_num_str.length == 10 ||  only_num_str.length == 11 ) {
+        return only_num_str.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
+    } else if (only_num_str.length == 12){
+        return only_num_str.replace(/^(\d{4})(\d{4})(\d{4})$/, `$1-$2-$3`);
+    } else {
+        return text.replaceAll(/[^0-9-]/g, '');
+    }
+}
+
 /** array > object 변환 */
 export function arr_to_obj(arr, key){
     const obj = {};

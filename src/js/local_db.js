@@ -29,6 +29,31 @@ export async function DB_L_BRAND(){
     return await db_request(param, "all");
 }
 
+// 상품 할인율 조회
+export async function DB_L_DISCOUNT_PRICE(data){
+    const query_str = `
+        SELECT
+        TP.BRAND_NO,
+        TP.PRODUCT_NO,
+        TP.PRODUCT_NAME,
+        TP.PRICE_IN,
+        TP.PRICE_OUT,
+        IFNULL(TPD.DISCOUNT_PERCENT, 0),
+        IFNULL(TPD.DISCOUNT_PRICE, 0),
+        TP.STATUS
+        FROM TBL_PRODUCT TP
+        LEFT JOIN TBL_PRODUCT_DC TPD ON 
+            TPD.BRAND_NO AND 
+            TP.BRAND_NO AND 
+            TPD.PRODUCT_NO = TP.PRODUCT_NO AND 
+            TPD.SHOP_NO = ${data.SHOP_NO};`;
+    const param = {
+        query: query_str
+    };
+
+    return await db_request(param, "all");
+}
+
 // 브랜드 추가
 export async function DB_I_BRAND(data){
     const query_str = `
@@ -229,6 +254,16 @@ export async function DB_D_SHOP(data){
     return await db_request(param, "run");
 }
 
+// 사업자번호 중복 여부 확인
+export async function DB_CHECK_BUSINESS_LICENSE(data){
+    const query_str = `SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = ${data.BUSINESS_LICENSE}) AS IS_CHECK;`;
+    const param = {
+        query: query_str
+    };
+
+    return await db_request(param, "check");
+}
+
 // 메인 프로세스에 sql 쿼리 요청
 async function db_request(param, type = ""){
     let result;
@@ -237,8 +272,9 @@ async function db_request(param, type = ""){
             result = await window.electron.db_run(param);
         }else if(type === "all"){
             result = await window.electron.db_all(param.query);
-        }else if(type === "trans"){
-
+        }else if(type === "check"){
+            const origin_result = await window.electron.db_all(param.query);
+            result = origin_result[0];
         }
     }catch (e) {
         console.error('DB 조회 실패:', e.message);

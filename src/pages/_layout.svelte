@@ -50,8 +50,14 @@
     </div>
 </div>
 
+<!--electron > alert/confirm 실행시 input focus 안되는 이슈로 인해 직접 구현-->
+<Alert/>
+<Confirm/>
+
 <script>
     import { goto } from '@roxi/routify';
+    import Alert from "../../public/assets/component/Alert.svelte";
+    import Confirm from "../../public/assets/component/Confirm.svelte";
     import Icon_shop from "../../public/assets/component/icon/Icon_shop.svelte";
     import Icon_box from "../../public/assets/component/icon/Icon_box.svelte";
 

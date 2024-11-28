@@ -117,6 +117,9 @@
         font-size: 15px;
         font-weight: 700;
     }
+    .div_shop_modal .input_business_license.success{
+        border: 1px solid #1fa835;
+    }
     .div_shop_modal .div_address{
         flex-direction: column;
         gap: 4px;
@@ -171,17 +174,22 @@
         </div>
         <div class="grid_th">사업자번호<span class="font_red"> *</span></div>
         <div class="grid_td">
-            <input type="text" bind:value={shop_obj.BUSINESS_LICENSE} placeholder="숫자만 입력해주세요.">
+            <input type="text" bind:value={shop_obj.BUSINESS_LICENSE}
+                   on:input={()=>{shop_obj.BUSINESS_LICENSE_CHECK = false;}}
+                   class:success={shop_obj.BUSINESS_LICENSE_CHECK}
+                   class="input_business_license"
+                   placeholder="예시) 000-00-00000" maxlength="12">
+            <button type="button" on:click={on_click_duplicate_check} disabled={shop_obj.BUSINESS_LICENSE_CHECK}>중복확인</button>
         </div>
         <div class="grid_th">대표자명</div>
         <div class="grid_td"><input type="text" bind:value={shop_obj.CEO_NAME}></div>
         <div class="grid_th">전화번호</div>
         <div class="grid_td">
-            <input type="text" bind:value={shop_obj.TEL} placeholder="예시) 02-0000-0000">
+            <input type="text" bind:value={shop_obj.TEL} placeholder="예시) 02-0000-0000" maxlength="14">
         </div>
         <div class="grid_th">휴대폰번호</div>
         <div class="grid_td">
-            <input type="text" bind:value={shop_obj.MOBILE} placeholder="예시) 010-0000-0000">
+            <input type="text" bind:value={shop_obj.MOBILE} placeholder="예시) 010-0000-0000" maxlength="14">
         </div>
         <div class="grid_th">이메일</div>
         <div class="grid_td">
@@ -208,7 +216,7 @@
     </div>
     <div slot="footer" class="div_modal_footer">
         <button type="button" on:click={shop_modal.hide}>닫기</button>
-        <button type="button">저장</button>
+        <button type="button" on:click={on_click_save}>저장</button>
     </div>
 </Modal>
 
@@ -235,8 +243,15 @@
     import {grid_button_renderer_class} from "../js/grid_class.js";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
-    import {DB_I_SHOP, DB_L_SHOP} from "../js/local_db.js";
-    import {g_nvl, comma} from "../js/common.js";
+    import {DB_CHECK_BUSINESS_LICENSE, DB_I_SHOP, DB_L_SHOP} from "../js/local_db.js";
+    import {
+        g_nvl,
+        comma,
+        validate_emojis,
+        byte_check,
+        business_license_formatter,
+        tel_formatter
+    } from "../js/common.js";
 
     const shop_schema = ()=>({
         SHOP_NAME: "",
@@ -249,7 +264,8 @@
         ADDRESS2: "",
         ZIPCODE: "",
         MEMO: "",
-        STATUS: "1"
+        STATUS: "1",
+        BUSINESS_LICENSE_CHECK: false
     });
 
     let shop_cnt = 0;
@@ -264,6 +280,12 @@
     let this_zipcode_content;
     // 거래처 그리드
     let this_grid, grid_api;
+
+    $:{
+        shop_obj.BUSINESS_LICENSE = business_license_formatter(shop_obj.BUSINESS_LICENSE);
+        shop_obj.TEL = tel_formatter(shop_obj.TEL);
+        shop_obj.MOBILE = tel_formatter(shop_obj.MOBILE);
+    }
 
     onMount(async ()=>{
         grid_options_init();
@@ -284,6 +306,70 @@
     async function on_click_add_shop(){
         modal_type = "insert";
         shop_modal.show();
+    }
+
+    // 사업자번호 중복 확인 버튼 클릭시
+    async function on_click_duplicate_check(){
+
+        // 사업자 번호 체크 초기화
+        shop_obj.BUSINESS_LICENSE_CHECK = false;
+
+        // 사업자번호 확인
+        if(shop_obj.BUSINESS_LICENSE === ""){
+            return alert("사업자번호를 입력해주세요.");
+        }
+
+        // 사업자번호 자리수 체크
+        if(shop_obj.BUSINESS_LICENSE.replaceAll("-", "").length !== 10){
+            return alert("사업자번호를 형식에 맞춰 입력해주세요.");
+        }
+
+        const result = await DB_CHECK_BUSINESS_LICENSE(shop_obj);
+        if(!result){
+            alert("사업자번호 중복체크 실패\n재시도 부탁드립니다.");
+        }else if(result.IS_CHECK === 1){
+            alert("이미 존재하는 사업자번호 입니다.");
+        }else{
+            shop_obj.BUSINESS_LICENSE_CHECK = true;
+        }
+    }
+
+    // 거래처 정보 모달에서 저장버튼 클릭시
+    function on_click_save(){
+        // 거래처명 확인
+        if(shop_obj.SHOP_NAME === ""){
+            return alert("거래처명을 입력해주세요.");
+        }
+
+        // 거래처명 최대 24자 이하만 입력가능
+        if(shop_obj.SHOP_NAME.length > 24){
+            return alert("상품명은 24자 이하만 입력가능합니다.");
+        }
+
+        // 거래처명 이모지 입력불가
+        if(validate_emojis(shop_obj.SHOP_NAME)){
+            return alert("이모티콘은 입력 불가능합니다.");
+        }
+
+        // 사업자번호 확인
+        if(shop_obj.BUSINESS_LICENSE === ""){
+            return alert("사업자번호를 입력해주세요.");
+        }
+
+        // 사업자번호 자리수 체크
+        if(shop_obj.BUSINESS_LICENSE.replaceAll("-", "").length !== 10){
+            return alert("사업자번호를 형식에 맞춰 입력해주세요.");
+        }
+
+        // 사업자번호 중복 체크
+        if(!shop_obj.BUSINESS_LICENSE_CHECK){
+            return alert("사업자번호 중복 확인을 해주세요.");
+        }
+
+        // 메모는 2000byte 이하만 입력가능
+        if(byte_check(shop_obj.MEMO) > 2000){
+            return alert("메모는 약 670자 이내로 입력가능합니다.");
+        }
     }
 
     // 우편번호 검색

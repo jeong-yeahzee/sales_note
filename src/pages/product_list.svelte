@@ -457,6 +457,55 @@
         product_modal.show();
     }
 
+    // 브랜드 목록 그리드
+    function brand_grid_options_init(){
+        const column_defs = [
+            {
+                headerName: "브랜드명",
+                field: "BRAND_NAME",
+                flex:1
+            },
+            {
+                headerName: "메모",
+                field: "MEMO",
+                flex:1
+            },
+            {
+                headerName: "상태",
+                field: "STATUS",
+                flex:1,
+                cellRenderer: (param)=>{
+                    if(param.data === undefined){
+                        return "";
+                    }
+                    return param.value === "1" ? "사용" : "미사용";
+                }
+            }
+        ];
+
+        const grid_options = {
+            columnDefs: column_defs,
+            rowSelection: {
+                mode: "singleRow",
+                checkboxes: false,
+                enableClickSelection: true
+            },
+            rowData: null,
+            loading: false,
+            overlayLoadingTemplate: "<div class='grid_loading'></div>",
+            overlayNoRowsTemplate: `<span>등록된 브랜드가 없습니다.</span>`,
+            onRowSelected(event) {
+                if(event.node.data === undefined){
+                    return;
+                }
+                // 브랜드 선택시 정보 블럭에 보여주기
+                brand_modal_obj = event.node.data;
+            }
+        }
+
+        brand_grid_api = agGrid.createGrid(this_brand_grid, grid_options);
+    }
+
     // 상품 목록 그리드
     function product_grid_options_init(){
         const update_btn_renderer_params = {
@@ -532,54 +581,5 @@
         }
 
         product_grid_api = agGrid.createGrid(this_product_grid, grid_options);
-    }
-
-    // 브랜드 목록 그리드
-    function brand_grid_options_init(){
-        const column_defs = [
-            {
-                headerName: "브랜드명",
-                field: "BRAND_NAME",
-                flex:1
-            },
-            {
-                headerName: "메모",
-                field: "MEMO",
-                flex:1
-            },
-            {
-                headerName: "상태",
-                field: "STATUS",
-                flex:1,
-                cellRenderer: (param)=>{
-                    if(param.data === undefined){
-                        return "";
-                    }
-                    return param.value === "1" ? "사용" : "미사용";
-                }
-            }
-        ];
-
-        const grid_options = {
-            columnDefs: column_defs,
-            rowSelection: {
-                mode: "singleRow",
-                checkboxes: false,
-                enableClickSelection: true
-            },
-            rowData: null,
-            loading: false,
-            overlayLoadingTemplate: "<div class='grid_loading'></div>",
-            overlayNoRowsTemplate: `<span>등록된 브랜드가 없습니다.</span>`,
-            onRowSelected(event) {
-                if(event.node.data === undefined){
-                    return;
-                }
-                // 브랜드 선택시 정보 블럭에 보여주기
-                brand_modal_obj = event.node.data;
-            }
-        }
-
-        brand_grid_api = agGrid.createGrid(this_brand_grid, grid_options);
     }
 </script>
