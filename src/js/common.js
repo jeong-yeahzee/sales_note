@@ -84,29 +84,29 @@ export function business_license_formatter(value){
 
 /** 전화번호 형식 변환 */
 export function tel_formatter(value) {
-    let only_num = String(value).replace(/[^0-9]/g, '');;
+    let only_num = String(value).replace(/[^0-9]/g, '');
     let reg_num = "";
     let form = "";
 
     // return blank
-    if (g_nvl2(only_num) === "") {
+    if (g_nvl(only_num) === "") {
         return "";
     }
 
-    if (only_num.length < 5 || only_num.substr(0, 1) !== "0") {
+    if (only_num.length < 5 || only_num.substring(0, 1) !== "0") {
         return only_num;
     }
 
     if (only_num.length > 4 && only_num.length < 7) {
         form = "$1-$2";
         reg_num = /([0-9]{3})([0-9]+)/;
-    } else if (only_num.length == 7) {
+    } else if (only_num.length === 7) {
         form = "$1-$2";
         reg_num = /([0-9]{3})([0-9]{4})/;
-    } else if (only_num.length == 8 || only_num.length == 9) {
+    } else if (only_num.length === 8 || only_num.length === 9) {
         form = "$1-$2-$3";
         reg_num = /([0-9]{2})([0-9]{3})([0-9]+)/;
-    } else if (only_num.length == 10) {
+    } else if (only_num.length === 10) {
         if (only_num.substring(0, 2) == "02") {
             form = "$1-$2-$3";
             reg_num = /([0-9]{2})([0-9]{4})([0-9]+)/;

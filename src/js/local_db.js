@@ -99,9 +99,10 @@ export async function DB_I_PRODUCT(data){
 }
 
 // 상품 추가
-export async function DB_I_SHOP(){
+export async function DB_M_SHOP(data){
     const query_str = `
-        INSERT INTO TBL_SHOP (
+        INSERT OR REPLACE INTO TBL_SHOP (
+            SHOP_NO,
             SHOP_NAME,
             STATUS,
             BUSINESS_LICENSE,
@@ -113,10 +114,11 @@ export async function DB_I_SHOP(){
             ZIPCODE,
             CEO_NAME,
             MEMO
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?);`;
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);`;
     const param = {
         query: query_str,
         value: [
+            data.SHOP_NO,
             data.SHOP_NAME,
             data.STATUS,
             data.BUSINESS_LICENSE,
@@ -180,44 +182,6 @@ export async function DB_U_PRODUCT(data){
             data.STATUS,
             data.MEMO,
             data.PRODUCT_NO
-        ]
-    };
-    
-    return await db_request(param, "run");
-}
-
-// 거래처 수정
-export async function DB_U_SHOP(data){
-    const query_str = `
-        UPDATE TBL_SHOP SET 
-            SHOP_NAME = ?,
-            STATUS = ?,
-            BUSINESS_LICENSE = ?,
-            TEL = ?,
-            MOBILE = ?,
-            EMAIL = ?,
-            ADDRESS1 = ?,
-            ADDRESS2 = ?,
-            ZIPCODE = ?,
-            CEO_NAME = ?,
-            MEMO = ?,
-            LAST_UPDATE_DT = CURRENT_TIMESTAMP
-        WHERE SHOP_NO = ?;`;
-    const param = {
-        query: query_str,
-        value: [
-            data.SHOP_NAME,
-            data.STATUS,
-            data.BUSINESS_LICENSE,
-            data.TEL,
-            data.MOBILE,
-            data.EMAIL,
-            data.ADDRESS1,
-            data.ADDRESS2,
-            data.ZIPCODE,
-            data.CEO_NAME,
-            data.MEMO,
-            data.SHOP_NO
         ]
     };
     

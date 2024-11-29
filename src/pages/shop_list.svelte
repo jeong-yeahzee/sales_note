@@ -98,7 +98,7 @@
     }
     .div_shop_modal .grid_td input::placeholder{
         opacity: 60%;
-        font-weight: 600;
+        font-weight: 400;
     }
     .div_shop_modal .grid_td textarea{
         flex-grow: 1;
@@ -178,7 +178,7 @@
                    on:input={()=>{shop_obj.BUSINESS_LICENSE_CHECK = false;}}
                    class:success={shop_obj.BUSINESS_LICENSE_CHECK}
                    class="input_business_license"
-                   placeholder="예시) 000-00-00000" maxlength="12">
+                   placeholder="숫자만 입력해주세요." maxlength="12">
             <button type="button" on:click={on_click_duplicate_check} disabled={shop_obj.BUSINESS_LICENSE_CHECK}>중복확인</button>
         </div>
         <div class="grid_th">대표자명</div>
@@ -193,7 +193,7 @@
         </div>
         <div class="grid_th">이메일</div>
         <div class="grid_td">
-            <input type="text" bind:value={shop_obj.EMAIL} placeholder="예시) example@gmail.com">
+            <input type="text" bind:value={shop_obj.EMAIL} placeholder="예시) example@gmail.com" maxlength="35">
         </div>
         <div class="grid_th" style="height: 104px">주소</div>
         <div class="grid_td div_address" style="height: 104px;">
@@ -243,7 +243,7 @@
     import {grid_button_renderer_class} from "../js/grid_class.js";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
-    import {DB_CHECK_BUSINESS_LICENSE, DB_I_SHOP, DB_L_SHOP} from "../js/local_db.js";
+    import {DB_CHECK_BUSINESS_LICENSE, DB_M_SHOP, DB_L_SHOP} from "../js/local_db.js";
     import {
         g_nvl,
         comma,
@@ -254,6 +254,7 @@
     } from "../js/common.js";
 
     const shop_schema = ()=>({
+        SHOP_NO: null,
         SHOP_NAME: "",
         BUSINESS_LICENSE: "",
         CEO_NAME: "",
@@ -289,9 +290,8 @@
 
     onMount(async ()=>{
         grid_options_init();
-        const result = await DB_L_SHOP();
-        shop_cnt = result.length;
-        grid_api.setGridOption("rowData", result);
+        // 거래처정보 조회
+        await get_shop();
 
         shop_modal.addEventListener("hide", ()=>{
             // 데이터 초기화
@@ -335,7 +335,7 @@
     }
 
     // 거래처 정보 모달에서 저장버튼 클릭시
-    function on_click_save(){
+    async function on_click_save(){
         // 거래처명 확인
         if(shop_obj.SHOP_NAME === ""){
             return alert("거래처명을 입력해주세요.");
@@ -370,6 +370,25 @@
         if(byte_check(shop_obj.MEMO) > 2000){
             return alert("메모는 약 670자 이내로 입력가능합니다.");
         }
+
+        const result = await DB_M_SHOP(shop_obj);
+
+        // DB 저장 오류일때
+        if(!result || result !== 1){
+            return alert("저장 실패\n재시도 부탁드립니다.");
+        }
+
+        alert("저장되었습니다.");
+        shop_modal.hide();
+        // 거래처 정보 재조회
+        await get_shop();
+    }
+
+    // 거래처정보 조회
+    async function get_shop(){
+        const result = await DB_L_SHOP();
+        shop_cnt = result.length;
+        grid_api.setGridOption("rowData", result);
     }
 
     // 우편번호 검색
