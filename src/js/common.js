@@ -73,31 +73,55 @@ export function number_formatter(params) {
 }
 
 /** 사업자번호 형식 변환 */
-export function business_license_formatter(text){
-    let only_num_str = text.replaceAll(/[^0-9]/g, '');
-    if (only_num_str.length === 10) {
-        return only_num_str.replace(/^(\d{3})(\d{2})(\d{5})$/, `$1-$2-$3`);
+export function business_license_formatter(value){
+    let only_num = value.replaceAll(/[^0-9]/g, '');
+    if (only_num.length === 10) {
+        return only_num.replace(/^(\d{3})(\d{2})(\d{5})$/, `$1-$2-$3`);
     } else {
-        return text.replaceAll(/[^0-9-]/g, '');
+        return value.replaceAll(/[^0-9-]/g, '');
     }
 }
 
 /** 전화번호 형식 변환 */
-export function tel_formatter(text) {
-    let only_num_str = text.replaceAll(/[^0-9]/g, '');
-    if ( Number(only_num_str.slice(0, 1)) !== 0 && Number(only_num_str.slice(0, 1)) !== 1) {
+export function tel_formatter(value) {
+    let only_num = String(value).replace(/[^0-9]/g, '');;
+    let reg_num = "";
+    let form = "";
+
+    // return blank
+    if (g_nvl2(only_num) === "") {
         return "";
-    } else if ( only_num_str.slice(0, 2) === "02" ) {
-        return only_num_str.replace(/^(\d{2})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
-    } else if ( only_num_str.length == 8 ) {
-        return only_num_str.replace(/^(\d{4})(\d{4})$/, `$1-$2`);
-    } else if ( only_num_str.length == 10 ||  only_num_str.length == 11 ) {
-        return only_num_str.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
-    } else if (only_num_str.length == 12){
-        return only_num_str.replace(/^(\d{4})(\d{4})(\d{4})$/, `$1-$2-$3`);
-    } else {
-        return text.replaceAll(/[^0-9-]/g, '');
     }
+
+    if (only_num.length < 5 || only_num.substr(0, 1) !== "0") {
+        return only_num;
+    }
+
+    if (only_num.length > 4 && only_num.length < 7) {
+        form = "$1-$2";
+        reg_num = /([0-9]{3})([0-9]+)/;
+    } else if (only_num.length == 7) {
+        form = "$1-$2";
+        reg_num = /([0-9]{3})([0-9]{4})/;
+    } else if (only_num.length == 8 || only_num.length == 9) {
+        form = "$1-$2-$3";
+        reg_num = /([0-9]{2})([0-9]{3})([0-9]+)/;
+    } else if (only_num.length == 10) {
+        if (only_num.substring(0, 2) == "02") {
+            form = "$1-$2-$3";
+            reg_num = /([0-9]{2})([0-9]{4})([0-9]+)/;
+        } else {
+            form = "$1-$2-$3";
+            reg_num = /([0-9]{3})([0-9]{3})([0-9]+)/;
+        }
+    } else if (only_num.length > 10) {
+        form = "$1-$2-$3";
+        reg_num = /([0-9]{3})([0-9]{4})([0-9]+)/;
+    }
+    while (reg_num.test(only_num)) {
+        only_num = only_num.replace(reg_num, form);
+    }
+    return only_num;
 }
 
 /** array > object 변환 */
