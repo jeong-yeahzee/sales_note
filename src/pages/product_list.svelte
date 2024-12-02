@@ -241,10 +241,10 @@
     import {grid_button_renderer_class} from "../js/grid_class.js";
     import {byte_check, comma, validate_emojis, number_formatter, arr_to_obj} from "../js/common.js";
     import {
-        DB_I_BRAND, DB_L_BRAND,
-        DB_L_PRODUCT, DB_U_BRAND,
-        DB_D_BRAND, DB_I_PRODUCT,
-        DB_U_PRODUCT, DB_D_PRODUCT
+        DB_L_BRAND,
+        DB_L_PRODUCT,
+        DB_M_BRAND, DB_D_BRAND,
+        DB_M_PRODUCT, DB_D_PRODUCT
     } from "../js/local_db.js";
 
     const brand_schema = ()=>({
@@ -337,13 +337,8 @@
             return alert("메모는 약 670자 이내로 입력가능합니다.");
         }
 
-        let result = false;
-
-        if(brand_modal_obj.BRAND_NO === ""){
-            result = await DB_I_BRAND(brand_modal_obj);
-        }else{
-            result = await DB_U_BRAND(brand_modal_obj);
-        }
+        // 추가/수정 저장
+        const result = await DB_M_BRAND(brand_modal_obj);
 
         // DB 저장 오류일때
         if(!result || result !== 1){
@@ -355,26 +350,7 @@
         // 모달값 초기화
         brand_modal_obj = brand_schema();
         // 브랜드 정보 재조회
-        brand_arr = await DB_L_BRAND();
-        brand_grid_api.setGridOption("rowData", brand_arr);
-    }
-
-    // 브랜드 삭제 버튼 클릭시
-    async function on_click_brand_delete(){
-        if(confirm("브랜드를 삭제하시겠습니까?")){
-            const result = await DB_D_BRAND(brand_modal_obj);
-
-            // DB 저장 실행일때
-            if(!result || result !== 1){
-                return alert("삭제 실패\n재시도 부탁드립니다.");
-            }
-
-            alert("삭제되었습니다.\n(삭제한 데이터는 휴지통 메뉴에서 복구 가능합니다.)");
-            // 모달값 초기화
-            brand_modal_obj = brand_schema();
-            // 브랜드 정보 재조회
-            await get_brand();
-        }
+        await get_brand();
     }
 
     // 상품 모달에서 저장 버튼 클릭시
@@ -399,13 +375,8 @@
             return alert("메모는 약 670자 이내로 입력가능합니다.");
         }
 
-        let result = false;
-
-        if(product_modal_obj.PRODUCT_NO === ""){
-            result = await DB_I_PRODUCT(product_modal_obj);
-        }else{
-            result = await DB_U_PRODUCT(product_modal_obj);
-        }
+        // 추가/수정 저장
+        const result = await DB_M_PRODUCT(product_modal_obj);
 
         // DB 저장 오류일때
         if(!result || result !== 1){
@@ -419,9 +390,29 @@
         await get_product();
     }
 
+    // 브랜드 삭제 버튼 클릭시
+    function on_click_brand_delete(){
+        confirm("브랜드를 삭제하시겠습니까?", confirm_accepted);
+        async function confirm_accepted(){
+            const result = await DB_D_BRAND(brand_modal_obj);
+
+            // DB 저장 실행일때
+            if(!result || result !== 1){
+                return alert("삭제 실패\n재시도 부탁드립니다.");
+            }
+
+            alert("삭제되었습니다.\n(삭제한 데이터는 휴지통 메뉴에서 복구 가능합니다.)");
+            // 모달값 초기화
+            brand_modal_obj = brand_schema();
+            // 브랜드 정보 재조회
+            await get_brand();
+        }
+    }
+
     // 상품 모달에서 삭제 버튼 클릭시
-    async function on_click_product_delete(){
-        if(confirm("상품은 삭제하시겠습니까?")){
+    function on_click_product_delete(){
+        confirm("상품을 삭제하시겠습니까?", confirm_accepted);
+        async function confirm_accepted(){
             const result = await DB_D_PRODUCT(product_modal_obj);
 
             // DB 저장 실행일때

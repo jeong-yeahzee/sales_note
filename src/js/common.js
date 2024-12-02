@@ -133,3 +133,12 @@ export function arr_to_obj(arr, key){
 
     return obj;
 }
+
+/** 할인판매가 계산 */
+export function dc_price_calc(data){
+    const price_out = Number(uc(g_nvl(data.PRICE_OUT,0)));
+    const dc_percent = Number(uc(g_nvl(data.DISCOUNT_PERCENT, 0)));
+    const dc_price = Number(uc(g_nvl(data.DISCOUNT_PRICE, 0)));
+    // 할인율 먼저 계산후 할인가 계산
+    return Math.floor(price_out * ((100-dc_percent)/100)) - dc_price;
+}

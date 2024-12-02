@@ -38,8 +38,8 @@ export async function DB_L_DISCOUNT_PRICE(data){
         TP.PRODUCT_NAME,
         TP.PRICE_IN,
         TP.PRICE_OUT,
-        IFNULL(TPD.DISCOUNT_PERCENT, 0),
-        IFNULL(TPD.DISCOUNT_PRICE, 0),
+        IFNULL(TPD.DISCOUNT_PERCENT, 0) AS DISCOUNT_PERCENT,
+        IFNULL(TPD.DISCOUNT_PRICE, 0) AS DISCOUNT_PRICE,
         TP.STATUS
         FROM TBL_PRODUCT TP
         LEFT JOIN TBL_PRODUCT_DC TPD ON 
@@ -55,37 +55,42 @@ export async function DB_L_DISCOUNT_PRICE(data){
 }
 
 // 브랜드 추가
-export async function DB_I_BRAND(data){
+export async function DB_M_BRAND(data){
     const query_str = `
-        INSERT INTO TBL_BRAND (
+        INSERT OR REPLACE INTO TBL_BRAND (
+            BRAND_NO,
             BRAND_NAME,
             STATUS,
-            MEMO
-        ) VALUES (?, ?, ?);`;
+            MEMO,
+            LAST_UPDATE_DT
+        ) VALUES (?,?,?,?,CURRENT_TIMESTAMP);`;
     const param = {
         query: query_str,
-        value: [data.BRAND_NAME, data.STATUS, data.MEMO]
+        value: [data.BRAND_NO,data.BRAND_NAME, data.STATUS, data.MEMO]
     };
 
     return await db_request(param, "run");
 }
 
 // 상품 추가
-export async function DB_I_PRODUCT(data){
+export async function DB_M_PRODUCT(data){
     const query_str = `
-        INSERT INTO TBL_PRODUCT (
+        INSERT OR REPLACE INTO TBL_PRODUCT (
             BRAND_NO,
+            PRODUCT_NO,
             PRODUCT_NAME,
             PRICE_IN,
             PRICE_OUT,
             ORDER_NO,
             STATUS,
-            MEMO 
-        ) VALUES (?,?,?,?,?,?,?);`;
+            MEMO,
+            LAST_UPDATE_DT
+        ) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`;
     const param = {
         query: query_str,
         value: [
             data.BRAND_NO,
+            data.PRODUCT_NO,
             data.PRODUCT_NAME,
             data.PRICE_IN,
             data.PRICE_OUT,
@@ -98,7 +103,7 @@ export async function DB_I_PRODUCT(data){
     return await db_request(param, "run");
 }
 
-// 상품 추가
+// 거래처 추가
 export async function DB_M_SHOP(data){
     const query_str = `
         INSERT OR REPLACE INTO TBL_SHOP (
@@ -113,8 +118,9 @@ export async function DB_M_SHOP(data){
             ADDRESS2,
             ZIPCODE,
             CEO_NAME,
-            MEMO
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);`;
+            MEMO,
+            LAST_UPDATE_DT
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`;
     const param = {
         query: query_str,
         value: [
@@ -136,55 +142,28 @@ export async function DB_M_SHOP(data){
     return await db_request(param, "run");
 }
 
-// 브랜드 수정
-export async function DB_U_BRAND(data){
+// 할인율/할인가 정보 추가
+export async function DB_M_PRODUCT_DC(data){
     const query_str = `
-        UPDATE TBL_BRAND SET
-            BRAND_NAME = ?,
-            STATUS = ?,
-            MEMO = ?,
-            LAST_UPDATE_DT = CURRENT_TIMESTAMP
-        WHERE BRAND_NO = ?`;
+        INSERT OR REPLACE INTO TBL_PRODUCT_DC (
+            SHOP_NO,
+            BRAND_NO,
+            PRODUCT_NO,
+            DISCOUNT_PERCENT,
+            DISCOUNT_PRICE,
+            LAST_UPDATE_DT
+        ) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP);`;
     const param = {
         query: query_str,
         value: [
-            data.BRAND_NAME,
-            data.STATUS,
-            data.MEMO,
-            data.BRAND_NO
-        ]
-    };
-
-    return await db_request(param, "run");
-}
-
-// 상품 수정
-export async function DB_U_PRODUCT(data){
-    const query_str = `
-        UPDATE TBL_PRODUCT SET 
-            BRAND_NO = ?,
-            PRODUCT_NAME = ?,
-            PRICE_IN = ?,
-            PRICE_OUT = ?,
-            ORDER_NO = ?,
-            STATUS = ?,
-            MEMO = ? ,
-            LAST_UPDATE_DT = CURRENT_TIMESTAMP
-        WHERE PRODUCT_NO = ?;`;
-    const param = {
-        query: query_str,
-        value: [
+            data.SHOP_NO,
             data.BRAND_NO,
-            data.PRODUCT_NAME,
-            data.PRICE_IN,
-            data.PRICE_OUT,
-            data.ORDER_NO,
-            data.STATUS,
-            data.MEMO,
-            data.PRODUCT_NO
+            data.PRODUCT_NO,
+            data.DISCOUNT_PERCENT,
+            data.DISCOUNT_PRICE
         ]
     };
-    
+
     return await db_request(param, "run");
 }
 
@@ -220,11 +199,12 @@ export async function DB_D_SHOP(data){
 
 // 사업자번호 중복 여부 확인
 export async function DB_CHECK_BUSINESS_LICENSE(data){
-    const query_str = `SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = ${data.BUSINESS_LICENSE}) AS IS_CHECK;`;
+    const query_str = `SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = '${data.BUSINESS_LICENSE}') AS IS_CHECK;`;
     const param = {
         query: query_str
     };
 
+    console.log("param",param.query);
     return await db_request(param, "check");
 }
 

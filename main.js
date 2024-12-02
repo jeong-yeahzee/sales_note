@@ -66,7 +66,6 @@ ipcMain.handle('db-run', (event, param) => {
 });
 
 // 데이터베이스 초기화 (테이블 생성/트리거 생성)
-// 데이터베이스 초기화 (테이블 생성/트리거 생성)
 async function init_db(){
   const table = create_table_query();
   const trigger = create_trigger_query();

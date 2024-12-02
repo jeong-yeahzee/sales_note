@@ -217,6 +217,9 @@
     <div slot="footer" class="div_modal_footer">
         <button type="button" on:click={shop_modal.hide}>닫기</button>
         <button type="button" on:click={on_click_save}>저장</button>
+        {#if modal_type === "update"}
+            <button type="button" on:click={on_click_delete}>삭제</button>
+        {/if}
     </div>
 </Modal>
 
@@ -243,7 +246,7 @@
     import {grid_button_renderer_class} from "../js/grid_class.js";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
-    import {DB_CHECK_BUSINESS_LICENSE, DB_M_SHOP, DB_L_SHOP} from "../js/local_db.js";
+    import {DB_CHECK_BUSINESS_LICENSE, DB_M_SHOP, DB_L_SHOP, DB_D_SHOP} from "../js/local_db.js";
     import {
         g_nvl,
         comma,
@@ -371,6 +374,7 @@
             return alert("메모는 약 670자 이내로 입력가능합니다.");
         }
 
+        // 추가/수정 저장
         const result = await DB_M_SHOP(shop_obj);
 
         // DB 저장 오류일때
@@ -382,6 +386,27 @@
         shop_modal.hide();
         // 거래처 정보 재조회
         await get_shop();
+    }
+
+    // 거래처 정보 모달에서 삭제버튼 클릭시
+    function on_click_delete(){
+        confirm("거래처를 삭제하시겠습니까?", confirm_accepted);
+        async function confirm_accepted(){
+            const result = await DB_D_SHOP(shop_obj);
+
+            // DB 저장 실행일때
+            if(!result || result !== 1){
+                return alert("삭제 실패\n재시도 부탁드립니다.");
+            }
+
+            alert("삭제되었습니다.\n(삭제한 데이터는 휴지통 메뉴에서 복구 가능합니다.)");
+            // 모달 데이터 초기화
+            shop_obj = shop_schema();
+            // 모달 닫기
+            shop_modal.hide();
+            // 거래처 정보 재조회
+            await get_shop();
+        }
     }
 
     // 거래처정보 조회

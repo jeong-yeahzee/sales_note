@@ -40,6 +40,7 @@
                 {:else if value.icon === "box"}
                     <Icon_box/>
                 {:else if value.icon === "discount"}
+                    <Icon_coin/>
                 {/if}
                 <div>{value.menu_name}</div>
             </div>
@@ -58,13 +59,14 @@
     import { goto } from '@roxi/routify';
     import Alert from "../../public/assets/component/Alert.svelte";
     import Confirm from "../../public/assets/component/Confirm.svelte";
+    import Icon_coin from "../../public/assets/component/icon/Icon_coin.svelte";
     import Icon_shop from "../../public/assets/component/icon/Icon_shop.svelte";
     import Icon_box from "../../public/assets/component/icon/Icon_box.svelte";
 
     const menu_arr = [
         {menu_name: "가맹점 관리", menu_url: "/shop_list", icon: "shop"},
         {menu_name: "상품 관리", menu_url: "/product_list", icon: "box"},
-        {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "box"},
+        {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "discount"},
         {menu_name: "전표 등록", menu_url: "", icon: ""},
         {menu_name: "거래 내역", menu_url: "", icon: ""},
         {menu_name: "미수금 관리", menu_url: "", icon: ""}
