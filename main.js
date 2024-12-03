@@ -64,6 +64,55 @@ ipcMain.handle('db-run', (event, param) => {
     });
   });
 });
+// DB 쿼리 결과를 렌더러로 전달하는 IPC 핸들러 ( 추가,수정,삭제 다건 실행 )
+ipcMain.handle('db-transaction', (event, param) => {
+  return new Promise((resolve, reject) => {
+
+
+    db.serialize(() => {
+
+      db.run("BEGIN TRANSACTION"); // 트랜잭션 시작
+
+      let rollback = false; // 오류 여부 rollback/commit
+
+      // 여러 쿼리를 실행
+      params.value.forEach((data) => {
+        db.run(params.query, data, function(err) {
+            if (err) {
+              rollback = true; // 오류 발생
+              console.error("Error executing query:", err);
+              return; // 오류가 발생하면 더 이상 실행하지 않음
+            }
+          }
+        );
+      });
+
+      // 오류가 발생한 경우 롤백
+      if (rollback) {
+
+        db.run("ROLLBACK", (err) => {
+          if (err) {
+            reject(false);
+          } else {
+            reject(false);
+          }
+        });
+
+      } else {
+
+        db.run("COMMIT", (err) => {
+          if (err) {
+            reject(false);
+          } else {
+            resolve(true);
+          }
+        });
+
+      }
+
+    });
+  });
+});
 
 // 데이터베이스 초기화 (테이블 생성/트리거 생성)
 async function init_db(){
@@ -142,7 +191,6 @@ const dc = `CREATE TABLE IF NOT EXISTS TBL_PRODUCT_DC (
               SHOP_NO INTEGER NOT NULL,
               DISCOUNT_PERCENT INTEGER NOT NULL DEFAULT 0,
               DISCOUNT_PRICE INTEGER NOT NULL DEFAULT 0,
-              STATUS TEXT NOT NULL DEFAULT '0',
               FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
               LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
               PRIMARY KEY (BRAND_NO,PRODUCT_NO,SHOP_NO)
