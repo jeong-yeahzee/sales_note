@@ -1,37 +1,13 @@
 
 // 거래처 전체 조회
-export async function DB_L_SHOP(){
-    const query_str = `SELECT * FROM TBL_SHOP ORDER BY SHOP_NAME;`;
-    const param = {
-        query: query_str
-    };
-
-    return await db_request(param, "all");
-}
-
-// 상품 전체 조회
-export async function DB_L_PRODUCT(){
-    const query_str = `SELECT * FROM TBL_PRODUCT ORDER BY ORDER_NO, PRODUCT_NAME;`;
-    const param = {
-        query: query_str
-    };
-
-    return await db_request(param, "all");
-}
-
+export const QUERY_L_SHOP = ()=>(`SELECT * FROM TBL_SHOP ORDER BY SHOP_NAME;`);
 // 브랜드 전체 조회
-export async function DB_L_BRAND(){
-    const query_str = `SELECT * FROM TBL_BRAND ORDER BY BRAND_NAME;`;
-    const param = {
-        query: query_str
-    };
-
-    return await db_request(param, "all");
-}
+export const QUERY_L_BRAND = ()=>(`SELECT * FROM TBL_BRAND ORDER BY BRAND_NAME;`);
+// 상품 전체 조회
+export const QUERY_L_PRODUCT = ()=>(`SELECT * FROM TBL_PRODUCT ORDER BY ORDER_NO, PRODUCT_NAME;`);
 
 // 상품 할인율 조회
-export async function DB_L_DISCOUNT_PRICE(data){
-    const query_str = `
+export const QUERY_L_DISCOUNT_PRICE = (data)=>(`
         SELECT
         TP.BRAND_NO,
         TP.PRODUCT_NO,
@@ -46,36 +22,20 @@ export async function DB_L_DISCOUNT_PRICE(data){
             TPD.BRAND_NO AND 
             TP.BRAND_NO AND 
             TPD.PRODUCT_NO = TP.PRODUCT_NO AND 
-            TPD.SHOP_NO = ${data.SHOP_NO};`;
-    const param = {
-        query: query_str
-    };
-
-    return await db_request(param, "all");
-}
+            TPD.SHOP_NO = ${data};`);
 
 // 브랜드 추가
-export async function DB_M_BRAND(data){
-    const query_str = `
+export const QUERY_M_BRAND = ()=>(`
         INSERT OR REPLACE INTO TBL_BRAND (
             BRAND_NO,
             BRAND_NAME,
             STATUS,
             MEMO,
             LAST_UPDATE_DT
-        ) VALUES (?,?,?,?,CURRENT_TIMESTAMP);`;
-    const param = {
-        query: query_str,
-        value: [data.BRAND_NO,data.BRAND_NAME, data.STATUS, data.MEMO]
-    };
+        ) VALUES (?,?,?,?,CURRENT_TIMESTAMP);`);
 
-    return await db_request(param, "run");
-}
-
-// 상품 추가
-export async function DB_M_PRODUCT(data){
-    const query_str = `
-        INSERT OR REPLACE INTO TBL_PRODUCT (
+export const QUERY_M_PRODUCT = ()=>(`
+    INSERT OR REPLACE INTO TBL_PRODUCT (
             BRAND_NO,
             PRODUCT_NO,
             PRODUCT_NAME,
@@ -85,27 +45,10 @@ export async function DB_M_PRODUCT(data){
             STATUS,
             MEMO,
             LAST_UPDATE_DT
-        ) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`;
-    const param = {
-        query: query_str,
-        value: [
-            data.BRAND_NO,
-            data.PRODUCT_NO,
-            data.PRODUCT_NAME,
-            data.PRICE_IN,
-            data.PRICE_OUT,
-            data.ORDER_NO,
-            data.STATUS,
-            data.MEMO
-        ]
-    };
-    
-    return await db_request(param, "run");
-}
+        ) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 거래처 추가
-export async function DB_M_SHOP(data){
-    const query_str = `
+export const QUERY_M_SHOP = ()=>(`
         INSERT OR REPLACE INTO TBL_SHOP (
             SHOP_NO,
             SHOP_NAME,
@@ -120,111 +63,61 @@ export async function DB_M_SHOP(data){
             CEO_NAME,
             MEMO,
             LAST_UPDATE_DT
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`;
-    const param = {
-        query: query_str,
-        value: [
-            data.SHOP_NO,
-            data.SHOP_NAME,
-            data.STATUS,
-            data.BUSINESS_LICENSE,
-            data.TEL,
-            data.MOBILE,
-            data.EMAIL,
-            data.ADDRESS1,
-            data.ADDRESS2,
-            data.ZIPCODE,
-            data.CEO_NAME,
-            data.MEMO
-        ]
-    };
-
-    return await db_request(param, "run");
-}
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 할인율/할인가 정보 추가
-export async function DB_M_PRODUCT_DC(data){
-    const query_str = `
-        INSERT OR REPLACE INTO TBL_PRODUCT_DC (
+export const QUERY_M_PRODUCT_DC = ()=>(`
+    INSERT OR REPLACE INTO TBL_PRODUCT_DC (
             SHOP_NO,
             BRAND_NO,
             PRODUCT_NO,
             DISCOUNT_PERCENT,
             DISCOUNT_PRICE,
             LAST_UPDATE_DT
-        ) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP);`;
-    const param = {
-        query: query_str,
-        value: [
-            data.SHOP_NO,
-            data.BRAND_NO,
-            data.PRODUCT_NO,
-            data.DISCOUNT_PERCENT,
-            data.DISCOUNT_PRICE
-        ]
-    };
-
-    return await db_request(param, "run");
-}
+        ) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 브랜드 삭제
-export async function DB_D_BRAND(data){
-    const query_str = `DELETE FROM TBL_BRAND WHERE BRAND_NO = ?;`;
-    const param = {
-        query: query_str,
-        value: [data.BRAND_NO]
-    };
-    return await db_request(param, "run");
-}
+export const QUERY_D_BRAND = ()=>(`DELETE FROM TBL_BRAND WHERE BRAND_NO = ?;`);
 
 // 상품 삭제
-export async function DB_D_PRODUCT(data){
-    const query_str = `DELETE FROM TBL_PRODUCT WHERE PRODUCT_NO = ?;`;
-    const param = {
-        query: query_str,
-        value: [data.PRODUCT_NO]
-    };
-    return await db_request(param, "run");
-}
+export const QUERY_D_PRODUCT = ()=>(`DELETE FROM TBL_PRODUCT WHERE PRODUCT_NO = ?;`);
 
 // 거래처 삭제
-export async function DB_D_SHOP(data){
-    const query_str = `DELETE FROM TBL_SHOP WHERE SHOP_NO = ?;`;
-    const param = {
-        query: query_str,
-        value: [data.SHOP_NO]
-    };
-    return await db_request(param, "run");
-}
+export const QUERY_D_SHOP = ()=>(`DELETE FROM TBL_SHOP WHERE SHOP_NO = ?;`);
 
 // 사업자번호 중복 여부 확인
-export async function DB_CHECK_BUSINESS_LICENSE(data){
-    const query_str = `SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = '${data.BUSINESS_LICENSE}') AS IS_CHECK;`;
-    const param = {
-        query: query_str
-    };
+export const QUERY_C_BUSINESS_LICENSE = (data)=>(`SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = '${data}') AS IS_CHECK;`);
 
-    console.log("param",param.query);
-    return await db_request(param, "check");
-}
-
-// 메인 프로세스에 sql 쿼리 요청
-async function db_request(param, type = ""){
-    let result;
-    try{
-        if(type === "run"){
-            result = await window.electron.db_run(param);
-        }else if(type === "all"){
-            result = await window.electron.db_all(param.query);
-        }else if(type === "check"){
-            const origin_result = await window.electron.db_all(param.query);
-            result = origin_result[0];
-        }
+// 메인 프로세스에 sql 쿼리 요청 ( 조회용 )
+export async function exec_all(param){
+    try {
+        const result = await window.electron.db_all(param);
+        return result;
     }catch (e) {
         console.error('DB 조회 실패:', e.message);
-        result = false;
-    }finally {
-        console.log("result",result);
+        return false;
+    }
+}
+
+// 메인 프로세스에 sql 쿼리 요청 ( 조회용 )
+export async function exec_check(param){
+    try {
+        const result = await window.electron.db_all(param);
+        return result[0];
+    }catch (e) {
+        console.error('DB 조회 실패:', e.message);
+        return false;
+    }
+}
+
+// 메인 프로세스에 sql 쿼리 요청 ( 추가/수정/삭제용 )
+export async function exec_transaction(param){
+    try {
+        const result = await window.electron.db_transaction(param);
+        console.log("db_transaction",result);
         return result;
+    }catch (e) {
+        console.error('DB 조회 실패:', e.message);
+        return false;
     }
 }

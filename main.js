@@ -76,8 +76,8 @@ ipcMain.handle('db-transaction', (event, param) => {
       let rollback = false; // 오류 여부 rollback/commit
 
       // 여러 쿼리를 실행
-      params.value.forEach((data) => {
-        db.run(params.query, data, function(err) {
+      param.value.forEach((data) => {
+        db.run(param.query, data, function(err) {
             if (err) {
               rollback = true; // 오류 발생
               console.error("Error executing query:", err);

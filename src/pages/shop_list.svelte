@@ -246,7 +246,10 @@
     import {grid_button_renderer_class} from "../js/grid_class.js";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
-    import {DB_CHECK_BUSINESS_LICENSE, DB_M_SHOP, DB_L_SHOP, DB_D_SHOP} from "../js/local_db.js";
+    import {
+        exec_all, exec_transaction, exec_check,
+        QUERY_L_SHOP, QUERY_C_BUSINESS_LICENSE, QUERY_M_SHOP, QUERY_D_SHOP
+    } from "../js/local_db.js";
     import {
         g_nvl,
         comma,
@@ -327,7 +330,7 @@
             return alert("사업자번호를 형식에 맞춰 입력해주세요.");
         }
 
-        const result = await DB_CHECK_BUSINESS_LICENSE(shop_obj);
+        const result = await DB_C_BUSINESS_LICENSE(shop_obj);
         if(!result){
             alert("사업자번호 중복체크 실패\n재시도 부탁드립니다.");
         }else if(result.IS_CHECK === 1){
@@ -378,7 +381,7 @@
         const result = await DB_M_SHOP(shop_obj);
 
         // DB 저장 오류일때
-        if(!result || result !== 1){
+        if(!result){
             return alert("저장 실패\n재시도 부탁드립니다.");
         }
 
@@ -438,6 +441,49 @@
         shop_obj = data;
         modal_type = "update";
         shop_modal.show();
+    }
+
+    // 거래처 정보 조회
+    async function DB_L_SHOP(){
+        const param = QUERY_L_SHOP();
+        return await exec_all(param);
+    }
+
+    // 거래처 정보 조회
+    async function DB_C_BUSINESS_LICENSE(data){
+        const param = QUERY_C_BUSINESS_LICENSE(data.BUSINESS_LICENSE);
+        return await exec_check(param);
+    }
+
+    // 거래처 정보 추가/수정
+    async function DB_M_SHOP(data){
+        const param = {
+            query: QUERY_M_SHOP(),
+            value: [[
+                data.SHOP_NO,
+                data.SHOP_NAME,
+                data.STATUS,
+                data.BUSINESS_LICENSE,
+                data.TEL,
+                data.MOBILE,
+                data.EMAIL,
+                data.ADDRESS1,
+                data.ADDRESS2,
+                data.ZIPCODE,
+                data.CEO_NAME,
+                data.MEMO
+            ]]
+        };
+        return await exec_transaction(param);
+    }
+
+    // 거래처 정보 삭제
+    async function DB_D_SHOP(data){
+        const param = {
+            query: QUERY_D_SHOP(),
+            value: [[data.SHOP_NO]]
+        };
+        return await exec_transaction(param);
     }
 
     // 가맹점 목록 그리드

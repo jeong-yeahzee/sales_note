@@ -241,10 +241,13 @@
     import {grid_button_renderer_class} from "../js/grid_class.js";
     import {byte_check, comma, validate_emojis, number_formatter, arr_to_obj} from "../js/common.js";
     import {
-        DB_L_BRAND,
-        DB_L_PRODUCT,
-        DB_M_BRAND, DB_D_BRAND,
-        DB_M_PRODUCT, DB_D_PRODUCT
+        exec_all,
+        exec_transaction,
+        QUERY_L_BRAND,
+        QUERY_L_PRODUCT,
+        QUERY_D_PRODUCT,
+        QUERY_D_BRAND,
+        QUERY_M_BRAND, QUERY_M_PRODUCT
     } from "../js/local_db.js";
 
     const brand_schema = ()=>({
@@ -341,7 +344,7 @@
         const result = await DB_M_BRAND(brand_modal_obj);
 
         // DB 저장 오류일때
-        if(!result || result !== 1){
+        if(!result){
             return alert("저장 실패\n재시도 부탁드립니다.");
         }
 
@@ -379,10 +382,9 @@
         const result = await DB_M_PRODUCT(product_modal_obj);
 
         // DB 저장 오류일때
-        if(!result || result !== 1){
+        if(!result){
             return alert("저장 실패\n재시도 부탁드립니다.");
         }
-
 
         alert("저장되었습니다.");
         product_modal.hide();
@@ -397,7 +399,7 @@
             const result = await DB_D_BRAND(brand_modal_obj);
 
             // DB 저장 실행일때
-            if(!result || result !== 1){
+            if(!result){
                 return alert("삭제 실패\n재시도 부탁드립니다.");
             }
 
@@ -416,7 +418,7 @@
             const result = await DB_D_PRODUCT(product_modal_obj);
 
             // DB 저장 실행일때
-            if(!result || result !== 1){
+            if(!result){
                 return alert("삭제 실패\n재시도 부탁드립니다.");
             }
 
@@ -446,6 +448,63 @@
     function grid_row_update(data){
         product_modal_obj = data;
         product_modal.show();
+    }
+
+    // 브랜드 조회
+    async function DB_L_BRAND(){
+        const param = QUERY_L_BRAND();
+        return await exec_all(param);
+    }
+
+    // 상품 조회
+    async function DB_L_PRODUCT(){
+        const param = QUERY_L_PRODUCT();
+        return await exec_all(param);
+    }
+
+    // 브랜드 추가/수정
+    async function DB_M_BRAND(data){
+        const param = {
+            query: QUERY_M_BRAND(),
+            value: [[data.BRAND_NO,data.BRAND_NAME, data.STATUS, data.MEMO]]
+        }
+        return await exec_transaction(param);
+    }
+
+    // 상품 추가/수정
+    async function DB_M_PRODUCT(data){
+        const param = {
+            query: QUERY_M_PRODUCT(),
+            value: [[
+                    data.BRAND_NO,
+                    data.PRODUCT_NO,
+                    data.PRODUCT_NAME,
+                    data.PRICE_IN,
+                    data.PRICE_OUT,
+                    data.ORDER_NO,
+                    data.STATUS,
+                    data.MEMO
+                ]]
+        }
+        return await exec_transaction(param);
+    }
+
+    // 브랜드 삭제
+    async function DB_D_BRAND(data){
+        const param = {
+            query: QUERY_D_BRAND(),
+            value: [[data.BRAND_NO]]
+        }
+        return await exec_transaction(param);
+    }
+
+    // 상품 삭제
+    async function DB_D_PRODUCT(data){
+        const param = {
+            query: QUERY_D_PRODUCT(),
+            value: [[data.PRODUCT_NO]]
+        }
+        return await exec_transaction(param);
     }
 
     // 브랜드 목록 그리드

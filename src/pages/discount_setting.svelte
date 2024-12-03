@@ -42,7 +42,10 @@
     import "ag-grid-community/styles/ag-grid.css";
     import "ag-grid-community/styles/ag-theme-quartz.css";
     import {arr_to_obj, dc_price_calc, g_nvl, number_formatter} from "../js/common.js";
-    import {DB_L_BRAND, DB_L_DISCOUNT_PRICE, DB_L_SHOP, DB_M_PRODUCT_DC} from "../js/local_db.js";
+    import {
+        exec_all, exec_transaction,
+        QUERY_L_BRAND, QUERY_L_DISCOUNT_PRICE, QUERY_L_SHOP, QUERY_M_PRODUCT_DC
+    } from "../js/local_db.js";
 
     // 등록된 거래처 수
     let shop_cnt = 0;
@@ -119,13 +122,11 @@
             return alert("변경된 금액이 없습니다.");
         }
 
-        // TODO transaction 구현해야겠다...
-
         // 추가/수정 저장
         const result = await DB_M_PRODUCT_DC(save_data);
 
         // DB 저장 오류일때
-        if(!result || result !== 1){
+        if(!result){
             return alert("저장 실패\n재시도 부탁드립니다.");
         }
 
@@ -160,6 +161,45 @@
         const result = await DB_L_DISCOUNT_PRICE(param);
         product_cnt = result.length;
         product_grid_api.setGridOption("rowData", result);
+    }
+
+    // 거래처 정보 조회
+    async function DB_L_SHOP(){
+        const param = QUERY_L_SHOP();
+        return await exec_all(param);
+    }
+
+    // 브랜드 조회
+    async function DB_L_BRAND(){
+        const param = QUERY_L_BRAND();
+        return await exec_all(param);
+    }
+
+    // 상품할인율 조회
+    async function DB_L_DISCOUNT_PRICE(data){
+        const param = QUERY_L_DISCOUNT_PRICE(data.SHOP_NO);
+        return await exec_all(param);
+    }
+
+    // 할인율/할인가 정보 추가
+    async function DB_M_PRODUCT_DC(data_arr){
+        const param = {
+            query: QUERY_M_PRODUCT_DC(),
+            value: []
+        };
+
+        // 여러건 한번에 저장할때 매개변수 위치 맞추기
+        for(const data of data_arr){
+            param.value.push([
+                data.SHOP_NO,
+                data.BRAND_NO,
+                data.PRODUCT_NO,
+                data.DISCOUNT_PERCENT,
+                data.DISCOUNT_PRICE
+            ]);
+        }
+
+        return await exec_transaction(param);
     }
 
     // 상품 목록 그리드
