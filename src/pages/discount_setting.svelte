@@ -165,19 +165,28 @@
 
     // 거래처 정보 조회
     async function DB_L_SHOP(){
-        const param = QUERY_L_SHOP();
+        const param = {
+            query: QUERY_L_SHOP(),
+            value: []
+        };
         return await exec_all(param);
     }
 
     // 브랜드 조회
     async function DB_L_BRAND(){
-        const param = QUERY_L_BRAND();
+        const param = {
+            query: QUERY_L_BRAND(),
+            value: []
+        };
         return await exec_all(param);
     }
 
     // 상품할인율 조회
     async function DB_L_DISCOUNT_PRICE(data){
-        const param = QUERY_L_DISCOUNT_PRICE(data.SHOP_NO);
+        const param = {
+            query: QUERY_M_PRODUCT_DC(),
+            value: [data.SHOP_NO]
+        };
         return await exec_all(param);
     }
 

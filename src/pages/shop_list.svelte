@@ -445,13 +445,19 @@
 
     // 거래처 정보 조회
     async function DB_L_SHOP(){
-        const param = QUERY_L_SHOP();
+        const param = {
+            query: QUERY_L_SHOP(),
+            value: []
+        };
         return await exec_all(param);
     }
 
     // 거래처 정보 조회
     async function DB_C_BUSINESS_LICENSE(data){
-        const param = QUERY_C_BUSINESS_LICENSE(data.BUSINESS_LICENSE);
+        const param = {
+            query: QUERY_C_BUSINESS_LICENSE(),
+            value: [data.BUSINESS_LICENSE]
+        };
         return await exec_check(param);
     }
 

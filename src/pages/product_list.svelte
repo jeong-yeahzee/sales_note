@@ -247,7 +247,7 @@
         QUERY_L_PRODUCT,
         QUERY_D_PRODUCT,
         QUERY_D_BRAND,
-        QUERY_M_BRAND, QUERY_M_PRODUCT
+        QUERY_M_BRAND, QUERY_M_PRODUCT, QUERY_M_PRODUCT_DC
     } from "../js/local_db.js";
 
     const brand_schema = ()=>({
@@ -452,13 +452,19 @@
 
     // 브랜드 조회
     async function DB_L_BRAND(){
-        const param = QUERY_L_BRAND();
+        const param = {
+            query: QUERY_L_BRAND(),
+            value: []
+        };
         return await exec_all(param);
     }
 
     // 상품 조회
     async function DB_L_PRODUCT(){
-        const param = QUERY_L_PRODUCT();
+        const param = {
+            query: QUERY_L_PRODUCT(),
+            value: []
+        };
         return await exec_all(param);
     }
 
