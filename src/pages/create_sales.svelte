@@ -195,7 +195,7 @@
         }
 
         // master_no 조회
-        const master_no = await DB_S_MASTER_NO();
+        const master_no = await DB_S_SALES_MASTER_NO();
         console.log("master_no",master_no);
     }
 
@@ -223,7 +223,7 @@
     }
 
     // 판매 마스터번호 조회
-    async function DB_S_MASTER_NO(){
+    async function DB_S_SALES_MASTER_NO(){
         const param = {
             query: QUERY_S_SALES_MASTER_NO(),
             value: []

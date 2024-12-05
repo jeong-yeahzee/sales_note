@@ -34,7 +34,7 @@ export const QUERY_S_PRODUCT_DC_PRICE = (type = "all") => {
 };
 
 // 판매 마스터번호 조회
-export const QUERY_S_SALES_MASTER_NO = ()=>(`SELECT * FROM sqlite_sequence WHERE name='TBL_SALES';`);
+export const QUERY_S_SALES_MASTER_NO = ()=>(`SELECT * FROM SQLITE_SEQUENCE WHERE NAME='TBL_SALES';`);
 
 // 거래처 전체 조회
 export const QUERY_L_SHOP = ()=>(`SELECT * FROM TBL_SHOP ORDER BY SHOP_NAME;`);
