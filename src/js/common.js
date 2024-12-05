@@ -134,9 +134,19 @@ export function arr_to_obj(arr, key){
     return obj;
 }
 
+/** obj 키값에 맞춰서 값 재설정 */
+export function set_value_obj(origin, set_data){
+    const new_obj = {};
+    for(const key in origin){
+        new_obj[key] = g_nvl(set_data[key]);
+    }
+
+    return new_obj;
+}
+
 /** 할인판매가 계산 */
 export function dc_price_calc(data){
-    const price_out = Number(uc(g_nvl(data.PRICE_OUT,0)));
+    const price_out = Number(uc(g_nvl(data.PRICE_OUT,data.SALES_PRICE_OUT)));
     const dc_percent = Number(uc(g_nvl(data.DISCOUNT_PERCENT, 0)));
     const dc_price = Number(uc(g_nvl(data.DISCOUNT_PRICE, 0)));
     // 할인율 먼저 계산후 할인가 계산

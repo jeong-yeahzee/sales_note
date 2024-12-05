@@ -374,7 +374,7 @@
 
         // 메모는 2000byte 이하만 입력가능
         if(byte_check(shop_obj.MEMO) > 2000){
-            return alert("메모는 약 670자 이내로 입력가능합니다.");
+            return alert("메모는 2000byte(약 670자) 이내로 입력가능합니다.");
         }
 
         // 추가/수정 저장

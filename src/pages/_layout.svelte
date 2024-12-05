@@ -67,8 +67,8 @@
         {menu_name: "가맹점 관리", menu_url: "/shop_list", icon: "shop"},
         {menu_name: "상품 관리", menu_url: "/product_list", icon: "box"},
         {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "discount"},
-        {menu_name: "전표 입력", menu_url: "/create_sales", icon: ""},
-        {menu_name: "거래 내역", menu_url: "", icon: ""},
+        {menu_name: "판매 입력", menu_url: "/create_sales", icon: ""},
+        {menu_name: "판매 내역", menu_url: "", icon: ""},
         {menu_name: "미수금 관리", menu_url: "", icon: ""}
     ];
 

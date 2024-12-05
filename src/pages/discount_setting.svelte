@@ -44,7 +44,7 @@
     import {arr_to_obj, dc_price_calc, g_nvl, number_formatter} from "../js/common.js";
     import {
         exec_all, exec_transaction,
-        QUERY_L_BRAND, QUERY_L_DISCOUNT_PRICE, QUERY_L_SHOP, QUERY_M_PRODUCT_DC
+        QUERY_L_BRAND, QUERY_L_PRODUCT_DC, QUERY_L_SHOP, QUERY_M_PRODUCT_DC
     } from "../js/local_db.js";
 
     // 등록된 거래처 수
@@ -79,7 +79,7 @@
     // 거래처 선택시
     async function on_change_shop_no(){
         product_grid_api.setGridOption("loading", true);
-        await get_discount_price();
+        await get_product_dc();
         product_grid_api.setGridOption("loading", false);
     }
 
@@ -132,7 +132,7 @@
 
         alert("저장되었습니다.");
         // 상품 할인 정보 재조회
-        await get_discount_price();
+        await get_product_dc();
     }
 
     // 거래처정보 가져오기
@@ -148,7 +148,7 @@
     }
 
     // 상품할인정보 가져오기
-    async function get_discount_price(){
+    async function get_product_dc(){
         // 선택된 거래처 없을때 상품 목록 초기화
         if(shop_no === ""){
             product_grid_api.setGridOption("rowData", []);
@@ -158,7 +158,7 @@
         const param = {
             SHOP_NO: shop_no
         };
-        const result = await DB_L_DISCOUNT_PRICE(param);
+        const result = await DB_L_PRODUCT_DC(param);
         product_cnt = result.length;
         product_grid_api.setGridOption("rowData", result);
     }
@@ -182,9 +182,9 @@
     }
 
     // 상품할인율 조회
-    async function DB_L_DISCOUNT_PRICE(data){
+    async function DB_L_PRODUCT_DC(data){
         const param = {
-            query: QUERY_M_PRODUCT_DC(),
+            query: QUERY_L_PRODUCT_DC(),
             value: [data.SHOP_NO]
         };
         return await exec_all(param);

@@ -4,21 +4,22 @@ export const QUERY_S_PRODUCT_DC_PRICE = (type = "all") => {
     let result_str = `
         SELECT
             TP.BRAND_NO,
+            TB.BRAND_NAME,
             TP.PRODUCT_NO,
             TP.PRODUCT_NAME,
-            TP.PRICE_IN,
-            TP.PRICE_OUT,
+            TP.PRICE_OUT AS SALES_PRICE_OUT,
             IFNULL(TPD.DISCOUNT_PERCENT, 0) AS DISCOUNT_PERCENT,
             IFNULL(TPD.DISCOUNT_PRICE, 0) AS DISCOUNT_PRICE,
             TP.STATUS
         FROM TBL_PRODUCT TP
+                 INNER JOIN TBL_BRAND TB ON TB.BRAND_NO = TP.BRAND_NO
                  LEFT JOIN TBL_PRODUCT_DC TPD ON
-            TPD.BRAND_NO = TP.BRAND_NO AND
-            TPD.PRODUCT_NO = TP.PRODUCT_NO AND
-            TPD.SHOP_NO = ?`;
+                    TPD.BRAND_NO = TP.BRAND_NO AND
+                    TPD.PRODUCT_NO = TP.PRODUCT_NO AND
+                    TPD.SHOP_NO = ?`;
 
     if(type === "number" || type === "all"){
-        result_str += ` WHERE PRODUCT_NO = ?`;
+        result_str += ` WHERE TP.PRODUCT_NO = ?`;
     }
     if(type === "all"){
         result_str += ` AND `;
@@ -26,11 +27,14 @@ export const QUERY_S_PRODUCT_DC_PRICE = (type = "all") => {
         result_str += ` WHERE `;
     }
     if(type === "text" || type === "all"){
-        result_str += `PRODUCT_NAME LIKE ?`;
+        result_str += `TP.PRODUCT_NAME LIKE ?`;
     }
 
     return result_str + ";";
 };
+
+// 판매 마스터번호 조회
+export const QUERY_S_SALES_MASTER_NO = ()=>(`SELECT * FROM sqlite_sequence WHERE name='TBL_SALES';`);
 
 // 거래처 전체 조회
 export const QUERY_L_SHOP = ()=>(`SELECT * FROM TBL_SHOP ORDER BY SHOP_NAME;`);
@@ -40,7 +44,7 @@ export const QUERY_L_BRAND = ()=>(`SELECT * FROM TBL_BRAND ORDER BY BRAND_NAME;`
 export const QUERY_L_PRODUCT = ()=>(`SELECT * FROM TBL_PRODUCT ORDER BY ORDER_NO, PRODUCT_NAME;`);
 
 // 상품 할인율 조회
-export const QUERY_L_DISCOUNT_PRICE = ()=>(`
+export const QUERY_L_PRODUCT_DC = ()=>(`
         SELECT
         TP.BRAND_NO,
         TP.PRODUCT_NO,
