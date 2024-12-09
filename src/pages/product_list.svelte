@@ -247,19 +247,19 @@
         QUERY_L_PRODUCT,
         QUERY_D_PRODUCT,
         QUERY_D_BRAND,
-        QUERY_M_BRAND, QUERY_M_PRODUCT, QUERY_M_PRODUCT_DC
+        QUERY_M_BRAND, QUERY_M_PRODUCT
     } from "../js/local_db.js";
 
     const brand_schema = ()=>({
-        BRAND_NO: "",
+        BRAND_NO: null,
         BRAND_NAME: "",
         ORDER_NO: "",
         STATUS: "1",
         MEMO: ""
     });
     const product_schema = ()=>({
-        BRAND_NO: "",
-        PRODUCT_NO: "",
+        BRAND_NO: null,
+        PRODUCT_NO: null,
         PRODUCT_NAME: "",
         PRICE_IN: 0,
         PRICE_OUT: 0,
@@ -472,7 +472,12 @@
     async function DB_M_BRAND(data){
         const param = {
             query: QUERY_M_BRAND(),
-            value: [[data.BRAND_NO,data.BRAND_NAME, data.STATUS, data.MEMO]]
+            value: [[
+                data.BRAND_NO,
+                data.BRAND_NAME,
+                data.STATUS,
+                data.MEMO
+            ]]
         }
         return await exec_transaction(param);
     }
@@ -482,15 +487,15 @@
         const param = {
             query: QUERY_M_PRODUCT(),
             value: [[
-                    data.BRAND_NO,
-                    data.PRODUCT_NO,
-                    data.PRODUCT_NAME,
-                    data.PRICE_IN,
-                    data.PRICE_OUT,
-                    data.ORDER_NO,
-                    data.STATUS,
-                    data.MEMO
-                ]]
+                data.BRAND_NO,
+                data.PRODUCT_NO,
+                data.PRODUCT_NAME,
+                data.PRICE_IN,
+                data.PRICE_OUT,
+                data.ORDER_NO,
+                data.STATUS,
+                data.MEMO
+            ]]
         }
         return await exec_transaction(param);
     }
@@ -499,7 +504,7 @@
     async function DB_D_BRAND(data){
         const param = {
             query: QUERY_D_BRAND(),
-            value: [[data.BRAND_NO]]
+            value: [data.BRAND_NO]
         }
         return await exec_transaction(param);
     }
@@ -508,7 +513,7 @@
     async function DB_D_PRODUCT(data){
         const param = {
             query: QUERY_D_PRODUCT(),
-            value: [[data.PRODUCT_NO]]
+            value: [data.PRODUCT_NO]
         }
         return await exec_transaction(param);
     }

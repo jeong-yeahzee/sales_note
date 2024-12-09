@@ -68,8 +68,8 @@
         {menu_name: "상품 관리", menu_url: "/product_list", icon: "box"},
         {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "discount"},
         {menu_name: "판매 입력", menu_url: "/create_sales", icon: ""},
-        {menu_name: "판매 내역", menu_url: "", icon: ""},
-        {menu_name: "미수금 관리", menu_url: "", icon: ""}
+        {menu_name: "판매 내역", menu_url: "/sales_list", icon: ""},
+        {menu_name: "미수금 관리", menu_url: "/outstanding_balance", icon: ""}
     ];
 
     function on_click_go_menu(url){

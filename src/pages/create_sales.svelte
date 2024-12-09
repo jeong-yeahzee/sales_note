@@ -42,25 +42,28 @@
         </div>
     </div>
     <div bind:this={this_grid} class="ag-theme-quartz div_grid"></div>
+    <div>판매일자: <Datepicker_custom bind:date={sales_date}/></div>
     <div>총 판매금액: {total_sales_amount}</div>
     <div>총 판매수량: {total_sales_count}</div>
     <div><button type="button" on:click={on_click_create_sales}>판매 추가</button></div>
 </div>
 <script>
+    import dayjs from "dayjs";
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
     import "ag-grid-community/styles/ag-grid.css";
     import "ag-grid-community/styles/ag-theme-quartz.css";
+    import Datepicker_custom from "../../public/assets/component/Datepicker_custom.svelte";
     import { dc_price_calc, number_formatter, set_value_obj} from "../js/common.js";
     import {
-        exec_all,
+        exec_all, exec_transaction, QUERY_I_SALES,
         QUERY_L_SHOP,
         QUERY_S_PRODUCT_DC_PRICE, QUERY_S_SALES_MASTER_NO
     } from "../js/local_db.js";
 
     const shop_schema = ()=>({
-        SHOP_NO: "",
+        SHOP_NO: null,
         SHOP_NAME: "",
         BUSINESS_LICENSE: "",
         CEO_NAME: "",
@@ -75,7 +78,7 @@
     });
 
     const product_schema = ()=>({
-        BRAND_NO: "",
+        BRAND_NO: null,
         BRAND_NAME: "",
         PRODUCT_NO: "",
         PRODUCT_NAME: "",
@@ -97,18 +100,21 @@
     let search_product;
     // 검색한 상품정보
     let product_obj = product_schema();
+    // 판매일자
+    let sales_date = dayjs().format("YYYY-MM-DD");
     // 총 판매금액
     let total_sales_amount = 0;
     // 총 판매 수량
     let total_sales_count = 0;
 
+    // 추가할 판매건
     let this_grid, grid_api;
 
     $:{
         // 할인판매단가
         product_obj.SALES_DC_PRICE_OUT = dc_price_calc(product_obj);
         // 판매가합계
-        product_obj.TOTAL_SALES_PRICE_OUT = Number(product_obj.SALES_DC_PRICE_OUT)*Number(product_obj.SALES_COUNT);
+        product_obj.TOTAL_SALES_PRICE_OUT = Number(product_obj.SALES_PRICE_OUT)*Number(product_obj.SALES_COUNT);
         // 할인판매가합계
         product_obj.TOTAL_SALES_DC_PRICE_OUT = Number(product_obj.SALES_DC_PRICE_OUT)*Number(product_obj.SALES_COUNT);
     }
@@ -173,14 +179,40 @@
 
 
         function confirm_accepted(){
-            // 판매건에 상품 추가
-            grid_api.applyTransaction({ add: [product_obj] });
+            let is_add = true;
 
+            grid_api.forEachNode(node =>{
+                const condition1 = (node.data.BRAND_NO === product_obj.BRAND_NO);
+                const condition2 = (node.data.PRODUCT_NO === product_obj.PRODUCT_NO);
+                const condition3 = (node.data.SALES_DC_PRICE_OUT === product_obj.SALES_DC_PRICE_OUT);
+
+                // 3가지 조건 모두 충족시 카운드 수량만 업데이트
+                if(condition1 && condition2 && condition3){
+                    node.data.SALES_COUNT = Number(node.data.SALES_COUNT) + Number(product_obj.SALES_COUNT);
+                    node.data.TOTAL_SALES_PRICE_OUT = Number(node.data.SALES_PRICE_OUT)*Number(node.data.SALES_COUNT);
+                    node.data.TOTAL_SALES_DC_PRICE_OUT = Number(node.data.SALES_DC_PRICE_OUT)*Number(node.data.SALES_COUNT);
+                    grid_api.applyTransaction({ update: [node.data]});
+                    // 업데이트 완료시 새로운 판매 추가 안함
+                    is_add = false;
+                }
+            });
+
+            // 기존 판매와 동일한 판매건이 아니라면 추가
+            if(is_add){
+                // 판매건에 상품 추가
+                grid_api.applyTransaction({ add: [product_obj] });
+            }
+
+            // 총 판매금액 합계 계산
             total_sales_amount = 0;
+            total_sales_count = 0;
             grid_api.forEachNode((node)=> {
                 total_sales_amount += node.data.TOTAL_SALES_DC_PRICE_OUT;
                 total_sales_count += Number(node.data.SALES_COUNT);
             });
+
+            // 검색한 상품 초기화
+            product_obj = product_schema();
         }
     }
 
@@ -195,13 +227,32 @@
         }
 
         // master_no 조회
-        const master_no = await DB_S_SALES_MASTER_NO();
-        console.log("master_no",master_no);
+        const insert_data = [];
+
+        // 저장할 데이터 담아주기
+        grid_api.forEachNode(node =>{
+            insert_data.push({...node.data, ...shop_obj});
+        });
+
+        const result = await DB_I_SALES(insert_data);
+        // DB 저장 오류일때
+        if(!result){
+            return alert("저장 실패\n재시도 부탁드립니다.");
+        }
+
+        alert("저장되었습니다.");
+        // 판매 입력 정보 초기화
+        grid_api.setGridOption("rowData", []);
     }
 
     // 거래처정보 조회
     async function get_shop(){
         shop_arr = await DB_L_SHOP();
+    }
+
+    // 판매 입력 정보 초기화
+    function init_sales(){
+        grid_api.setGridOption("rowData", []);
     }
 
     // 거래처 정보 조회
@@ -228,12 +279,45 @@
             query: QUERY_S_SALES_MASTER_NO(),
             value: []
         }
-        return await exec_all(param);
+
+        const result = await exec_all(param);
+        return result[0].MASTER_NO;
     }
 
     // 판매등록
-    async function DB_I_SALES(){
+    async function DB_I_SALES(data_arr){
+        const param = {
+            query: QUERY_I_SALES(),
+            value: []
+        };
 
+        // 판매 묶어주는 master_no 조회
+        const master_no = await DB_S_SALES_MASTER_NO();
+
+        // 여러건 한번에 저장할때 매개변수 위치 맞추기
+        for(const data of data_arr){
+            const sales_type = "1"; // 1:판매, 2:반품
+            param.value.push([
+                master_no,
+                data.SHOP_NO,
+                data.SHOP_NAME,
+                data.BRAND_NO,
+                data.BRAND_NAME,
+                data.PRODUCT_NO,
+                data.PRODUCT_NAME,
+                data.SALES_COUNT,
+                data.DISCOUNT_PERCENT,
+                data.DISCOUNT_PRICE,
+                data.SALES_PRICE_OUT,
+                data.SALES_DC_PRICE_OUT,
+                data.TOTAL_SALES_PRICE_OUT,
+                data.TOTAL_SALES_DC_PRICE_OUT,
+                sales_type,
+                sales_date
+            ]);
+        }
+
+        return await exec_transaction(param);
     }
 
     // 판매 그리드

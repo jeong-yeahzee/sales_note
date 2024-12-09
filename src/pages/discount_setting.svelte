@@ -27,11 +27,12 @@
             {/each}
         </select>
         <input type="text" bind:value={dc_percent} class="input_discount" placeholder="할인율"/>
+        <button type="button" on:click={()=>{on_click_dc_price_apply("percent")}}>선택적용</button>
         <input type="text" bind:value={dc_price} class="input_discount" placeholder="할인가"/>
-        <button type="button" on:click={on_click_dc_price_apply}>선택적용</button>
+        <button type="button" on:click={()=>{on_click_dc_price_apply("price")}}>선택적용</button>
         <button type="button" on:click={on_click_dc_price_save}>변경사항 저장</button>
-    </div>
-    <div bind:this={this_product_grid} class="ag-theme-quartz div_grid product_grid"></div>
+    </div><div bind:this={this_product_grid} class="ag-theme-quartz div_grid product_grid"></div>
+
 </div>
 
 <script>
@@ -84,12 +85,19 @@
     }
 
     // 선택 적용 클릭시
-    function on_click_dc_price_apply(){
+    function on_click_dc_price_apply(type=""){
         const selected_data = product_grid_api.getSelectedRows();
 
-        // 할인율/할인가 둘중 하나는 필수값
-        if(dc_percent === "" && dc_price === ""){
-            return alert("적용할 할인율/할인가를 입력해주세요.");
+        if(type === ""){
+            return;
+        }
+
+        if(type === "percent" && dc_percent === ""){
+            return alert("적용할 할인율을 입력해주세요.");
+        }
+
+        if(type === "price" && dc_price === ""){
+            return alert("적용할 할인가를 입력해주세요.");
         }
 
         // 할인율/할인가 적용 상품 없을때
@@ -98,11 +106,20 @@
         }
 
         selected_data.forEach((data)=>{
-            data.DISCOUNT_PERCENT = Number(g_nvl(dc_percent,0));
-            data.DISCOUNT_PRICE = Number(g_nvl(dc_price,0));
+            if(type === "percent"){
+                data.DISCOUNT_PERCENT = Number(g_nvl(dc_percent,0));
+            }
+
+            if(type === "price"){
+                data.DISCOUNT_PRICE = Number(g_nvl(dc_price,0));
+            }
+
             data.IS_UPDATE = true;
         });
 
+        // 입력값 초기화
+        dc_percent = "";
+        dc_price = "";
         product_grid_api.redrawRows();
         product_grid_api.deselectAll();
     }
@@ -207,7 +224,6 @@
                 data.DISCOUNT_PRICE
             ]);
         }
-
         return await exec_transaction(param);
     }
 

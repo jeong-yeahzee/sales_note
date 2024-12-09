@@ -27,6 +27,8 @@
   },
   "dependencies": {
     "ag-grid-community": "^32.3.3",
+    "date-picker-svelte": "^2.15.1",
+    "dayjs": "^1.11.13",
     "sqlite3": "^5.1.7"
   }
 }

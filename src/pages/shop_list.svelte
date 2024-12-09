@@ -487,7 +487,7 @@
     async function DB_D_SHOP(data){
         const param = {
             query: QUERY_D_SHOP(),
-            value: [[data.SHOP_NO]]
+            value: [data.SHOP_NO]
         };
         return await exec_transaction(param);
     }
