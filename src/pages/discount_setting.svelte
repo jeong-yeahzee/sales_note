@@ -36,7 +36,6 @@
 </div>
 
 <script>
-    // 가맹점 그리드
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
@@ -45,7 +44,7 @@
     import {arr_to_obj, dc_price_calc, g_nvl, number_formatter} from "../js/common.js";
     import {
         exec_all, exec_transaction,
-        QUERY_L_BRAND, QUERY_L_PRODUCT_DC, QUERY_L_SHOP, QUERY_M_PRODUCT_DC
+        QR_L_BRAND, QR_L_PRODUCT_DC, QR_L_SHOP, QR_M_PRODUCT_DC
     } from "../js/local_db.js";
 
     // 등록된 거래처 수
@@ -92,11 +91,11 @@
             return;
         }
 
-        if(type === "percent" && dc_percent === ""){
+        if(type === "percent" && Number(dc_percent) === 0){
             return alert("적용할 할인율을 입력해주세요.");
         }
 
-        if(type === "price" && dc_price === ""){
+        if(type === "price" && Number(dc_price) === 0){
             return alert("적용할 할인가를 입력해주세요.");
         }
 
@@ -183,7 +182,7 @@
     // 거래처 정보 조회
     async function DB_L_SHOP(){
         const param = {
-            query: QUERY_L_SHOP(),
+            query: QR_L_SHOP(),
             value: []
         };
         return await exec_all(param);
@@ -192,7 +191,7 @@
     // 브랜드 조회
     async function DB_L_BRAND(){
         const param = {
-            query: QUERY_L_BRAND(),
+            query: QR_L_BRAND(),
             value: []
         };
         return await exec_all(param);
@@ -201,7 +200,7 @@
     // 상품할인율 조회
     async function DB_L_PRODUCT_DC(data){
         const param = {
-            query: QUERY_L_PRODUCT_DC(),
+            query: QR_L_PRODUCT_DC(),
             value: [data.SHOP_NO]
         };
         return await exec_all(param);
@@ -210,7 +209,7 @@
     // 할인율/할인가 정보 추가
     async function DB_M_PRODUCT_DC(data_arr){
         const param = {
-            query: QUERY_M_PRODUCT_DC(),
+            query: QR_M_PRODUCT_DC(),
             value: []
         };
 

@@ -158,6 +158,7 @@ function create_table_query(){
                   ZIPCODE TEXT,
                   CEO_NAME TEXT,
                   MEMO TEXT,
+                  TOTAL_SALES_OUTSTANDING INTEGER NOT NULL DEFAULT 0,
                   FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                   LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                 );`;
@@ -186,14 +187,14 @@ const product = `CREATE TABLE IF NOT EXISTS TBL_PRODUCT (
                   );`;
 
 const dc = `CREATE TABLE IF NOT EXISTS TBL_PRODUCT_DC (
-              BRAND_NO INTEGER NOT NULL,
+              BRAND_NO INTEGER,
               PRODUCT_NO INTEGER NOT NULL,
               SHOP_NO INTEGER NOT NULL,
               DISCOUNT_PERCENT INTEGER NOT NULL DEFAULT 0,
               DISCOUNT_PRICE INTEGER NOT NULL DEFAULT 0,
               FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
               LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-              PRIMARY KEY (BRAND_NO,PRODUCT_NO,SHOP_NO)
+              PRIMARY KEY (PRODUCT_NO,SHOP_NO)
               );`;
 
 const sales = `CREATE TABLE IF NOT EXISTS TBL_SALES (
@@ -325,7 +326,7 @@ const backup_payment = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_PAYMENT (
 
 // 트리거 생성하는 쿼리
 function create_trigger_query(){
-  const shop_delete = `
+  const trigger_delete = `
     CREATE TRIGGER IF NOT EXISTS TRIG_TLB_SHOP
     BEFORE DELETE ON TBL_SHOP
     FOR EACH ROW
@@ -343,6 +344,7 @@ function create_trigger_query(){
           ZIPCODE,
           CEO_NAME,
           MEMO,
+          TOTAL_SALES_OUTSTANDING,
           FIRST_CREATE_DT,
           LAST_UPDATE_DT
         )
@@ -359,12 +361,11 @@ function create_trigger_query(){
           OLD.ZIPCODE,
           OLD.CEO_NAME,
           OLD.MEMO,
+          OLD.TOTAL_SALES_OUTSTANDING,
           OLD.FIRST_CREATE_DT,
           OLD.LAST_UPDATE_DT
         );
-    END;`;
-
-  const brand_delete = `
+    END;
     CREATE TRIGGER IF NOT EXISTS TRIG_TLB_BRAND
     BEFORE DELETE ON TBL_BRAND
     FOR EACH ROW
@@ -387,9 +388,7 @@ function create_trigger_query(){
           OLD.FIRST_CREATE_DT,
           OLD.LAST_UPDATE_DT
         );
-    END;`;
-
-  const product_delete = `
+    END;
     CREATE TRIGGER IF NOT EXISTS TRIG_TBL_PRODUCT
     BEFORE DELETE ON TBL_PRODUCT
     FOR EACH ROW
@@ -418,9 +417,7 @@ function create_trigger_query(){
           OLD.FIRST_CREATE_DT,
           OLD.LAST_UPDATE_DT
         );
-    END;`;
-
-  const sales_delete = `
+    END;
     CREATE TRIGGER IF NOT EXISTS TRIG_TBL_SALES
     BEFORE DELETE ON TBL_SALES
     FOR EACH ROW
@@ -467,9 +464,7 @@ function create_trigger_query(){
           OLD.FIRST_CREATE_DT,
           OLD.LAST_UPDATE_DT
         );
-    END;`;
-
-  const payment_delete = `
+    END;
     CREATE TRIGGER IF NOT EXISTS TRIG_TBL_PAYMENT
     BEFORE DELETE ON TBL_PAYMENT
     FOR EACH ROW
@@ -503,6 +498,60 @@ function create_trigger_query(){
           OLD.LAST_UPDATE_DT
         );
     END;`;
+  const trigger_calc = `
+    CREATE TRIGGER IF NOT EXISTS TRIG_OUTSTANDING_SALES_CALC_INSERT
+        AFTER INSERT ON TBL_SALES
+        FOR EACH ROW
+    BEGIN
+        UPDATE TBL_SHOP
+        SET TOTAL_SALES_OUTSTANDING = TOTAL_SALES_OUTSTANDING + NEW.TOTAL_SALES_DC_PRICE_OUT
+        WHERE SHOP_NO = NEW.SHOP_NO;
+    END;
+    
+    CREATE TRIGGER IF NOT EXISTS TRIG_OUTSTANDING_SALES_CALC_UPDATE
+        AFTER UPDATE ON TBL_SALES
+        FOR EACH ROW
+    BEGIN
+        UPDATE TBL_SHOP
+        SET TOTAL_SALES_OUTSTANDING = TOTAL_SALES_OUTSTANDING + (NEW.TOTAL_SALES_DC_PRICE_OUT - OLD.TOTAL_SALES_DC_PRICE_OUT)
+        WHERE SHOP_NO = NEW.SHOP_NO;
+    END;
+    
+    CREATE TRIGGER IF NOT EXISTS TRIG_OUTSTANDING_SALES_CALC_DELETE
+        AFTER DELETE ON TBL_SALES
+        FOR EACH ROW
+    BEGIN
+        UPDATE TBL_SHOP
+        SET TOTAL_SALES_OUTSTANDING = TOTAL_SALES_OUTSTANDING - NEW.TOTAL_SALES_DC_PRICE_OUT
+        WHERE SHOP_NO = OLD.SHOP_NO;
+    END;
+    
+    CREATE TRIGGER IF NOT EXISTS TRIG_OUTSTANDING_PAYMENT_CALC_INSERT
+        AFTER INSERT ON TBL_PAYMENT
+        FOR EACH ROW
+    BEGIN
+        UPDATE TBL_SHOP
+        SET TOTAL_SALES_OUTSTANDING = TOTAL_SALES_OUTSTANDING - NEW.PAYMENT_AMOUNT
+        WHERE SHOP_NO = NEW.SHOP_NO;
+    END;
+    
+    CREATE TRIGGER IF NOT EXISTS TRIG_OUTSTANDING_PAYMENT_CALC_UPDATE
+        AFTER UPDATE ON TBL_PAYMENT
+        FOR EACH ROW
+    BEGIN
+        UPDATE TBL_SHOP
+        SET TOTAL_SALES_OUTSTANDING = TOTAL_SALES_OUTSTANDING - (NEW.PAYMENT_AMOUNT - OLD.PAYMENT_AMOUNT)
+        WHERE SHOP_NO = NEW.SHOP_NO;
+    END;
+    
+    CREATE TRIGGER IF NOT EXISTS TRIG_OUTSTANDING_PAYMENT_CALC_DELETE
+        AFTER DELETE ON TBL_PAYMENT
+        FOR EACH ROW
+    BEGIN
+        UPDATE TBL_SHOP
+        SET TOTAL_SALES_OUTSTANDING = TOTAL_SALES_OUTSTANDING + NEW.PAYMENT_AMOUNT
+        WHERE SHOP_NO = OLD.SHOP_NO;
+    END;`;
 
-  return shop_delete+brand_delete+product_delete+sales_delete+payment_delete;
+  return trigger_delete+trigger_calc;
 }

@@ -31,7 +31,7 @@
     import "ag-grid-community/styles/ag-theme-quartz.css";
     import Datepicker_custom from "../../public/assets/component/Datepicker_custom.svelte";
     import { number_formatter } from "../js/common.js";
-    import {exec_all, QUERY_L_SALES} from "../js/local_db.js";
+    import {exec_all, QR_L_SALES} from "../js/local_db.js";
 
     let search_obj = {
         SHOP_NO: null,
@@ -57,7 +57,7 @@
     // 판매내역 조회
     async function DB_L_SALES(){
         const param = {
-            query: QUERY_L_SALES(),
+            query: QR_L_SALES(),
             value: [
                 search_obj.SHOP_NO,
                 search_obj.SHOP_NO,

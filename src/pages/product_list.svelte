@@ -243,11 +243,11 @@
     import {
         exec_all,
         exec_transaction,
-        QUERY_L_BRAND,
-        QUERY_L_PRODUCT,
-        QUERY_D_PRODUCT,
-        QUERY_D_BRAND,
-        QUERY_M_BRAND, QUERY_M_PRODUCT
+        QR_L_BRAND,
+        QR_L_PRODUCT,
+        QR_D_PRODUCT,
+        QR_D_BRAND,
+        QR_M_BRAND, QR_M_PRODUCT
     } from "../js/local_db.js";
 
     const brand_schema = ()=>({
@@ -453,7 +453,7 @@
     // 브랜드 조회
     async function DB_L_BRAND(){
         const param = {
-            query: QUERY_L_BRAND(),
+            query: QR_L_BRAND(),
             value: []
         };
         return await exec_all(param);
@@ -462,7 +462,7 @@
     // 상품 조회
     async function DB_L_PRODUCT(){
         const param = {
-            query: QUERY_L_PRODUCT(),
+            query: QR_L_PRODUCT(),
             value: []
         };
         return await exec_all(param);
@@ -471,7 +471,7 @@
     // 브랜드 추가/수정
     async function DB_M_BRAND(data){
         const param = {
-            query: QUERY_M_BRAND(),
+            query: QR_M_BRAND(),
             value: [[
                 data.BRAND_NO,
                 data.BRAND_NAME,
@@ -485,7 +485,7 @@
     // 상품 추가/수정
     async function DB_M_PRODUCT(data){
         const param = {
-            query: QUERY_M_PRODUCT(),
+            query: QR_M_PRODUCT(),
             value: [[
                 data.BRAND_NO,
                 data.PRODUCT_NO,
@@ -503,7 +503,7 @@
     // 브랜드 삭제
     async function DB_D_BRAND(data){
         const param = {
-            query: QUERY_D_BRAND(),
+            query: QR_D_BRAND(),
             value: [data.BRAND_NO]
         }
         return await exec_transaction(param);
@@ -512,7 +512,7 @@
     // 상품 삭제
     async function DB_D_PRODUCT(data){
         const param = {
-            query: QUERY_D_PRODUCT(),
+            query: QR_D_PRODUCT(),
             value: [data.PRODUCT_NO]
         }
         return await exec_transaction(param);

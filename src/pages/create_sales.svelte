@@ -57,9 +57,9 @@
     import Datepicker_custom from "../../public/assets/component/Datepicker_custom.svelte";
     import { dc_price_calc, number_formatter, set_value_obj} from "../js/common.js";
     import {
-        exec_all, exec_transaction, QUERY_I_SALES,
-        QUERY_L_SHOP,
-        QUERY_S_PRODUCT_DC_PRICE, QUERY_S_SALES_MASTER_NO
+        exec_all, exec_transaction, QR_I_SALES,
+        QR_L_SHOP,
+        QR_S_PRODUCT_DC_PRICE, QR_S_SALES_MASTER_NO
     } from "../js/local_db.js";
 
     const shop_schema = ()=>({
@@ -258,7 +258,7 @@
     // 거래처 정보 조회
     async function DB_L_SHOP(){
         const param = {
-            query: QUERY_L_SHOP(),
+            query: QR_L_SHOP(),
             value: []
         };
         return await exec_all(param);
@@ -267,7 +267,7 @@
     // 상품 할인 가격정보 조회
     async function DB_S_PRODUCT_DC_PRICE(){
         const param = {
-            query: QUERY_S_PRODUCT_DC_PRICE("text"),
+            query: QR_S_PRODUCT_DC_PRICE("text"),
             value: [shop_obj.SHOP_NO, `%${search_product}%`]
         };
         return await exec_all(param);
@@ -276,7 +276,7 @@
     // 판매 마스터번호 조회
     async function DB_S_SALES_MASTER_NO(){
         const param = {
-            query: QUERY_S_SALES_MASTER_NO(),
+            query: QR_S_SALES_MASTER_NO(),
             value: []
         }
 
@@ -287,7 +287,7 @@
     // 판매등록
     async function DB_I_SALES(data_arr){
         const param = {
-            query: QUERY_I_SALES(),
+            query: QR_I_SALES(),
             value: []
         };
 

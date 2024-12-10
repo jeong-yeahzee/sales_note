@@ -145,7 +145,7 @@
 
 <div class="div_contain">
     <div class="div_title">
-        <div>가맹점 관리</div>
+        <div>거래처 관리</div>
         <button type="button" on:click={on_click_add_shop}>추가</button>
     </div>
     <div class="div_content">
@@ -248,7 +248,7 @@
     import Modal from "../../public/assets/component/Modal.svelte";
     import {
         exec_all, exec_transaction, exec_check,
-        QUERY_L_SHOP, QUERY_C_BUSINESS_LICENSE, QUERY_M_SHOP, QUERY_D_SHOP
+        QR_L_SHOP, QR_C_BUSINESS_LICENSE, QR_M_SHOP, QR_D_SHOP
     } from "../js/local_db.js";
     import {
         g_nvl,
@@ -446,7 +446,7 @@
     // 거래처 정보 조회
     async function DB_L_SHOP(){
         const param = {
-            query: QUERY_L_SHOP(),
+            query: QR_L_SHOP(),
             value: []
         };
         return await exec_all(param);
@@ -455,7 +455,7 @@
     // 거래처 정보 조회
     async function DB_C_BUSINESS_LICENSE(data){
         const param = {
-            query: QUERY_C_BUSINESS_LICENSE(),
+            query: QR_C_BUSINESS_LICENSE(),
             value: [data.BUSINESS_LICENSE]
         };
         return await exec_check(param);
@@ -464,7 +464,7 @@
     // 거래처 정보 추가/수정
     async function DB_M_SHOP(data){
         const param = {
-            query: QUERY_M_SHOP(),
+            query: QR_M_SHOP(),
             value: [[
                 data.SHOP_NO,
                 data.SHOP_NAME,
@@ -486,7 +486,7 @@
     // 거래처 정보 삭제
     async function DB_D_SHOP(data){
         const param = {
-            query: QUERY_D_SHOP(),
+            query: QR_D_SHOP(),
             value: [data.SHOP_NO]
         };
         return await exec_transaction(param);

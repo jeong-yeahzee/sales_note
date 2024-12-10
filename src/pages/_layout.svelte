@@ -64,7 +64,7 @@
     import Icon_box from "../../public/assets/component/icon/Icon_box.svelte";
 
     const menu_arr = [
-        {menu_name: "가맹점 관리", menu_url: "/shop_list", icon: "shop"},
+        {menu_name: "거래처 관리", menu_url: "/shop_list", icon: "shop"},
         {menu_name: "상품 관리", menu_url: "/product_list", icon: "box"},
         {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "discount"},
         {menu_name: "판매 입력", menu_url: "/create_sales", icon: ""},

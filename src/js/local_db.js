@@ -1,6 +1,6 @@
 
 // 상품 조건 검색
-export const QUERY_S_PRODUCT_DC_PRICE = (type = "all") => {
+export const QR_S_PRODUCT_DC_PRICE = (type = "all") => {
     let result_str = `
         SELECT
             TP.BRAND_NO,
@@ -14,7 +14,6 @@ export const QUERY_S_PRODUCT_DC_PRICE = (type = "all") => {
         FROM TBL_PRODUCT TP
                  LEFT JOIN TBL_BRAND TB ON TB.BRAND_NO = TP.BRAND_NO
                  LEFT JOIN TBL_PRODUCT_DC TPD ON
-                    TPD.BRAND_NO = TP.BRAND_NO AND
                     TPD.PRODUCT_NO = TP.PRODUCT_NO AND
                     TPD.SHOP_NO = ?`;
 
@@ -34,17 +33,17 @@ export const QUERY_S_PRODUCT_DC_PRICE = (type = "all") => {
 };
 
 // 판매 마스터번호 조회
-export const QUERY_S_SALES_MASTER_NO = ()=>(`SELECT COALESCE((SELECT SEQ+1 FROM sqlite_sequence WHERE name='TBL_SALES'), 0) AS MASTER_NO;`);
+export const QR_S_SALES_MASTER_NO = ()=>(`SELECT COALESCE((SELECT SEQ+1 FROM sqlite_sequence WHERE name='TBL_SALES'), 0) AS MASTER_NO;`);
 
 // 거래처 전체 조회
-export const QUERY_L_SHOP = ()=>(`SELECT * FROM TBL_SHOP ORDER BY SHOP_NAME;`);
+export const QR_L_SHOP = ()=>(`SELECT * FROM TBL_SHOP ORDER BY SHOP_NAME;`);
 // 브랜드 전체 조회
-export const QUERY_L_BRAND = ()=>(`SELECT * FROM TBL_BRAND ORDER BY BRAND_NAME;`);
+export const QR_L_BRAND = ()=>(`SELECT * FROM TBL_BRAND ORDER BY BRAND_NAME;`);
 // 상품 전체 조회
-export const QUERY_L_PRODUCT = ()=>(`SELECT * FROM TBL_PRODUCT ORDER BY ORDER_NO, PRODUCT_NAME;`);
+export const QR_L_PRODUCT = ()=>(`SELECT * FROM TBL_PRODUCT ORDER BY ORDER_NO, PRODUCT_NAME;`);
 
 // 상품 할인율 조회
-export const QUERY_L_PRODUCT_DC = ()=>(`
+export const QR_L_PRODUCT_DC = ()=>(`
         SELECT
         TP.BRAND_NO,
         TP.PRODUCT_NO,
@@ -56,19 +55,18 @@ export const QUERY_L_PRODUCT_DC = ()=>(`
         TP.STATUS
         FROM TBL_PRODUCT TP
         LEFT JOIN TBL_PRODUCT_DC TPD ON 
-            TPD.BRAND_NO = TP.BRAND_NO AND 
             TPD.PRODUCT_NO = TP.PRODUCT_NO AND 
             TPD.SHOP_NO = ?;`);
 
 // 판매 조회
-export const QUERY_L_SALES = ()=>(`
+export const QR_L_SALES = ()=>(`
     SELECT *
     FROM TBL_SALES
     WHERE (SHOP_NO = ? OR ? IS NULL)
       AND SALES_DT BETWEEN ? AND ?;`);
 
 // 거래처 추가/수정
-export const QUERY_M_SHOP = ()=>(`
+export const QR_M_SHOP = ()=>(`
         INSERT OR REPLACE INTO TBL_SHOP (
             SHOP_NO,
             SHOP_NAME,
@@ -86,7 +84,7 @@ export const QUERY_M_SHOP = ()=>(`
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 브랜드 추가/수정
-export const QUERY_M_BRAND = ()=>(`
+export const QR_M_BRAND = ()=>(`
         INSERT OR REPLACE INTO TBL_BRAND (
             BRAND_NO,
             BRAND_NAME,
@@ -96,7 +94,7 @@ export const QUERY_M_BRAND = ()=>(`
         ) VALUES (?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 상품추가/수정
-export const QUERY_M_PRODUCT = ()=>(`
+export const QR_M_PRODUCT = ()=>(`
     INSERT OR REPLACE INTO TBL_PRODUCT (
             BRAND_NO,
             PRODUCT_NO,
@@ -110,7 +108,7 @@ export const QUERY_M_PRODUCT = ()=>(`
         ) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 할인율/할인가 정보 추가/수정
-export const QUERY_M_PRODUCT_DC = ()=>(`
+export const QR_M_PRODUCT_DC = ()=>(`
     INSERT OR REPLACE INTO TBL_PRODUCT_DC (
             SHOP_NO,
             BRAND_NO,
@@ -121,7 +119,7 @@ export const QUERY_M_PRODUCT_DC = ()=>(`
         ) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 판매 추가
-export const QUERY_I_SALES = ()=>(`
+export const QR_I_SALES = ()=>(`
     INSERT INTO TBL_SALES (
             MASTER_NO,
             SHOP_NO,
@@ -142,16 +140,16 @@ export const QUERY_I_SALES = ()=>(`
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);`);
 
 // 거래처 삭제
-export const QUERY_D_SHOP = ()=>(`DELETE FROM TBL_SHOP WHERE SHOP_NO = ?;`);
+export const QR_D_SHOP = ()=>(`DELETE FROM TBL_SHOP WHERE SHOP_NO = ?;`);
 
 // 브랜드 삭제
-export const QUERY_D_BRAND = ()=>(`DELETE FROM TBL_BRAND WHERE BRAND_NO = ?;`);
+export const QR_D_BRAND = ()=>(`DELETE FROM TBL_BRAND WHERE BRAND_NO = ?;`);
 
 // 상품 삭제
-export const QUERY_D_PRODUCT = ()=>(`DELETE FROM TBL_PRODUCT WHERE PRODUCT_NO = ?;`);
+export const QR_D_PRODUCT = ()=>(`DELETE FROM TBL_PRODUCT WHERE PRODUCT_NO = ?;`);
 
 // 사업자번호 중복 여부 확인
-export const QUERY_C_BUSINESS_LICENSE = ()=>(`SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = ?) AS IS_CHECK;`);
+export const QR_C_BUSINESS_LICENSE = ()=>(`SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = ?) AS IS_CHECK;`);
 
 // 메인 프로세스에 sql 쿼리 요청 ( 조회용 )
 export async function exec_all(param){
