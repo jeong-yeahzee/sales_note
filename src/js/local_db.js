@@ -65,6 +65,22 @@ export const QR_L_SALES = ()=>(`
     WHERE (SHOP_NO = ? OR ? IS NULL)
       AND SALES_DT BETWEEN ? AND ?;`);
 
+// 납부/판매 조회
+export const QR_L_SALES_PAYMENT = ()=>(`
+    SELECT
+        MAX(TS.SALES_DT) AS SHOW_DT,
+        SUM(TS.TOTAL_SALES_DC_PRICE_OUT) AS TOTAL_AMOUNT,
+        MAX(TS.SALES_TYPE) AS SALES_TYPE,
+        '판매' AS TYPE
+    FROM TBL_SALES TS WHERE SHOP_NO = ? GROUP BY MASTER_NO
+    UNION ALL
+    SELECT
+        TP.PAY_DT AS SHOW_DT,
+        TP.TOTAL_CALC_AMOUNT AS TOTAL_AMOUNT,
+        TP.PAY_TYPE AS SALES_TYPE,
+        '납부' AS TYPE
+    FROM TBL_PAYMENT TP WHERE SHOP_NO = ?;`);
+
 // 거래처 추가/수정
 export const QR_M_SHOP = ()=>(`
         INSERT OR REPLACE INTO TBL_SHOP (
@@ -129,10 +145,11 @@ export const QR_M_PAYMENT = ()=>(`
             DISCOUNT_AMOUNT,
             PAYMENT_AMOUNT,
             ADMIN_AMOUNT,
+            TOTAL_CALC_AMOUNT,
             MEMO,
             PAY_DT,
             LAST_UPDATE_DT
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`);
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
 // 판매 추가
 export const QR_I_SALES = ()=>(`
