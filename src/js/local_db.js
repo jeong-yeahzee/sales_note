@@ -118,6 +118,22 @@ export const QR_M_PRODUCT_DC = ()=>(`
             LAST_UPDATE_DT
         ) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP);`);
 
+// 납부정보 정보 추가/수정
+export const QR_M_PAYMENT = ()=>(`
+    INSERT OR REPLACE INTO TBL_PAYMENT (
+            PAY_NO,
+            PAY_TYPE,
+            SHOP_NO,
+            CASH_AMOUNT,
+            CARD_AMOUNT,
+            DISCOUNT_AMOUNT,
+            PAYMENT_AMOUNT,
+            ADMIN_AMOUNT,
+            MEMO,
+            PAY_DT,
+            LAST_UPDATE_DT
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);`);
+
 // 판매 추가
 export const QR_I_SALES = ()=>(`
     INSERT INTO TBL_SALES (
@@ -139,6 +155,19 @@ export const QR_I_SALES = ()=>(`
             SALES_DT
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);`);
 
+// 판매 수정
+export const QR_U_SALES = ()=>(`
+    UPDATE TBL_SALES SET
+         SALES_COUNT = ?
+        ,DISCOUNT_PERCENT = ?
+        ,DISCOUNT_PRICE = ?
+        ,SALES_PRICE_OUT = ?
+        ,SALES_DC_PRICE_OUT = ?
+        ,TOTAL_SALES_PRICE_OUT = ?
+        ,TOTAL_SALES_DC_PRICE_OUT = ?
+        ,SALES_DT = ?
+    WHERE SALES_NO = ?;`);
+
 // 거래처 삭제
 export const QR_D_SHOP = ()=>(`DELETE FROM TBL_SHOP WHERE SHOP_NO = ?;`);
 
@@ -147,6 +176,12 @@ export const QR_D_BRAND = ()=>(`DELETE FROM TBL_BRAND WHERE BRAND_NO = ?;`);
 
 // 상품 삭제
 export const QR_D_PRODUCT = ()=>(`DELETE FROM TBL_PRODUCT WHERE PRODUCT_NO = ?;`);
+
+// 판매 삭제
+export const QR_D_SALES = ()=>(`DELETE FROM TBL_SALES WHERE SALES_NO = ?;`);
+
+// 납부 삭제
+export const QR_D_PAYMENT = ()=>(`DELETE FROM TBL_PAYMENT WHERE PAY_NO = ?;`);
 
 // 사업자번호 중복 여부 확인
 export const QR_C_BUSINESS_LICENSE = ()=>(`SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = ?) AS IS_CHECK;`);
