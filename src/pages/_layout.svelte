@@ -31,6 +31,36 @@
     .active{
         background-color: rgba(0, 0, 0, 3%);
     }
+
+    :global(.modal_header){
+        width: 100%;
+        height: 48px;
+        padding: 16px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #3C4359;
+        font-size: 14px;
+        font-weight: 700;
+        box-sizing: border-box;
+        box-shadow: 0 -1px 0 0 #D1D1D1 inset;
+    }
+    :global(.modal_close_icon){
+        display: flex;
+        width: 32px;
+        height: 32px;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        background: transparent;
+    }
+    :global(.ag-header-cell-label){
+        justify-content: center;
+    }
+    :global(.text_right){
+        text-align: right;
+    }
 </style>
 
 <div class="div_contain">

@@ -25,31 +25,7 @@
         height: 100%;
     }
 
-    .div_modal_header{
-        width: 100%;
-        height: 48px;
-        padding: 16px 8px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: #3C4359;
-        font-size: 14px;
-        font-weight: 700;
-        box-sizing: border-box;
-        box-shadow: 0 -1px 0 0 #D1D1D1 inset;
-    }
-    .btn_close{
-        display: flex;
-        width: 32px;
-        height: 32px;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        border: none;
-        background: transparent;
-    }
-
-    .div_shop_modal{
+    .shop_modal{
         display: grid;
         width: 368px;
         grid-template-columns: 72px 1fr;
@@ -59,17 +35,17 @@
         overflow-y: auto;
         background-color: rgba(0, 0, 0, 3%);
     }
-    .div_shop_modal>div{
+    .shop_modal>div{
         display: flex;
         height: 28px;
         align-items: center;
         gap: 2px;
     }
-    .div_shop_modal .grid_th{
+    .shop_modal .grid_th{
         font-size: 13px;
         font-weight: 400;
     }
-    .div_shop_modal .grid_td input{
+    .shop_modal .grid_td input{
         flex-grow: 1;
         width: 100%;
         height: 100%;
@@ -78,21 +54,21 @@
         font-size: 14px;
         font-weight: 500;
     }
-    .div_shop_modal .grid_td input::placeholder{
+    .shop_modal .grid_td input::placeholder{
         font-size: 13px;
         opacity: 60%;
         font-weight: 400;
     }
-    .div_shop_modal .grid_td textarea{
+    .shop_modal .grid_td textarea{
         flex-grow: 1;
         height: 100%;
         border: 1px solid rgba(0,0,0,40%);
         resize: none;
         padding: 8px;
-        font-size: 16px;
-        font-weight: 700;
+        font-size: 14px;
+        font-weight: 500;
     }
-    .div_shop_modal .grid_td select{
+    .shop_modal .grid_td select{
         width: auto;
         height: 100%;
         border: 1px solid rgba(0,0,0,40%);
@@ -100,36 +76,36 @@
         font-size: 13px;
         font-weight: 500;
     }
-    .div_shop_modal .grid_td input:focus,
-    .div_shop_modal .grid_td textarea:focus,
-    .div_shop_modal .grid_td select:focus{
+    .shop_modal .grid_td input:focus,
+    .shop_modal .grid_td textarea:focus,
+    .shop_modal .grid_td select:focus{
         background-color: #e3f0ff;
     }
-    .div_shop_modal .input_business_license.success{
+    .shop_modal .input_business_license.success{
         border: 1px solid #1fa835;
     }
     .btn_duplicate{
         flex-shrink: 0;
         height: 100%;
     }
-    .div_shop_modal .div_address{
+    .shop_modal .div_address{
         flex-direction: column;
         gap: 4px;
         box-sizing: border-box;
         align-items: baseline;
     }
-    .div_shop_modal .div_zipcode{
+    .shop_modal .div_zipcode{
         display: flex;
         height: 100%;
         gap: 4px;
     }
-    .div_shop_modal .div_zipcode>input{
+    .shop_modal .div_zipcode>input{
         width: 100px;
     }
     .div_zipcode_modal{
         width: 500px;
     }
-    .div_create_dt{
+    .create_dt{
         flex-grow: 1;
         text-align: center;
         line-height: 110%;
@@ -159,39 +135,31 @@
     .font_red{
         color: red;
     }
-
-    :global(.ag-header-cell-label){
-        justify-content: center;
-    }
-    :global(.text_right){
-        text-align: right;
-    }
 </style>
 
 <div class="div_contain">
     <div class="div_title">
         <div>
-            <span>거래처 관리</span>
+            <span>거래처 목록</span>
             <span class="sub_title">/ {comma(shop_cnt)}건</span>
         </div>
-        <button type="button" on:click={on_click_add_shop}>추가</button>
+        <button type="button" on:click={shop_modal.show()}>추가</button>
     </div>
     <div bind:this={this_grid} class="div_grid"></div>
 </div>
 
 <Modal bind:modal={shop_modal}>
-    <div slot="header"
-         on:click={shop_modal.hide} class="div_modal_header">
-        {#if modal_type === "insert"}
+    <div slot="header" class="modal_header">
+        {#if shop_obj.SHOP_NO === null}
             거래처 추가
         {:else}
             거래처 정보 수정
         {/if}
-        <button type="button" class="btn_close" >
+        <button type="button" on:click={shop_modal.hide()} class="modal_close_icon" >
             <Icon_close/>
         </button>
     </div>
-    <div slot="content" class="div_shop_modal">
+    <div slot="content" class="shop_modal">
         <div class="grid_th">거래처명<span class="font_red"> *</span></div>
         <div class="grid_td">
             <input type="text" bind:value={shop_obj.SHOP_NAME} placeholder="24자까지 입력가능합니다." maxlength="24">
@@ -241,12 +209,12 @@
                 <option value="0">미사용</option>
             </select>
             {#if shop_obj.SHOP_NO !== null}
-                <div class="div_create_dt">거래처 생성일<br/> {shop_obj.FIRST_CREATE_DT}</div>
+                <div class="create_dt">거래처 생성일<br/> {shop_obj.FIRST_CREATE_DT}</div>
             {/if}
         </div>
     </div>
     <div slot="footer" class="shop_modal_footer">
-        {#if modal_type === "update"}
+        {#if shop_obj.SHOP_NO !== null}
             <button type="button" on:click={on_click_delete} class="btn_delete">삭제</button>
         {/if}
         <button type="button" on:click={on_click_save}>저장</button>
@@ -254,9 +222,9 @@
 </Modal>
 
 <Modal bind:modal={zipcode_modal} backdrop={true}>
-    <div slot="header" class="div_modal_header">
+    <div slot="header" class="modal_header">
         <span>주소찾기</span>
-        <button class="btn_close" on:click={zipcode_modal.hide}>
+        <button class="modal_close_icon" on:click={zipcode_modal.hide}>
             <Icon_close/>
         </button>
     </div>
@@ -307,8 +275,6 @@
     let shop_cnt = 0;
     // 거래처 정보 추가/수정 모달
     let shop_modal;
-    // 추가/수정인지 체크
-    let modal_type = "";
     // 추가/수정 하려는 거래처 정보
     let shop_obj = shop_schema();
     // 주소찾기 모달
@@ -336,12 +302,6 @@
             exec_daum_post_code();
         });
     });
-
-    // 추가 버튼 클릭시 > 거래처 등록 모달 오픈
-    async function on_click_add_shop(){
-        modal_type = "insert";
-        shop_modal.show();
-    }
 
     // 사업자번호 중복 확인 버튼 클릭시
     async function on_click_duplicate_check(){
@@ -468,7 +428,6 @@
     // 그리드의 정보 수정 버튼 클릭시
     function grid_row_update(data){
         shop_obj = data;
-        modal_type = "update";
         shop_modal.show();
     }
 
@@ -532,7 +491,8 @@
             {
                 cellRenderer: grid_button_renderer_class,
                 cellRendererParams: update_btn_renderer_params,
-                width: 60
+                width: 60,
+                filter: false
             },
             {
                 headerName: "코드",
@@ -569,6 +529,10 @@
                 field: "ADDRESS1",
                 width: 100,
                 valueFormatter: (param)=>{
+                    if(param.data === undefined){
+                        return "";
+                    }
+
                     return `${g_nvl(param.data.ADDRESS1)} ${g_nvl(param.data.ADDRESS2)}`;
                 }
             },
@@ -581,7 +545,12 @@
                 headerName: "생성일자",
                 field: "FIRST_CREATE_DT",
                 width: 100,
+                filter: false,
                 cellRenderer: (param)=>{
+                    if(param.data === undefined){
+                        return "";
+                    }
+
                     return param.data.FIRST_CREATE_DT.split(" ")[0];
                 }
             }
@@ -591,6 +560,7 @@
             theme: custom_theme,
             columnDefs: column_defs,
             rowData: null,
+            loading: false,
             headerHeight: 32,
             floatingFiltersHeight: 32,
             defaultColDef: {

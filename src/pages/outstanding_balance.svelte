@@ -14,7 +14,7 @@
         height: 50%;
     }
 
-    .div_modal_header{
+    .modal_header{
         width: 100%;
         height: 48px;
         padding: 16px 8px;
@@ -39,9 +39,9 @@
     </div>
 </div>
 <Modal bind:modal={payment_modal}>
-    <div slot="header" class="div_modal_header">
+    <div slot="header" class="modal_header">
         <span>미수금 납부</span>
-        <button class="btn_close" on:click={payment_modal.hide}>
+        <button class="modal_close_icon" on:click={payment_modal.hide}>
             <Icon_close/>
         </button>
     </div>

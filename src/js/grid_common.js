@@ -7,6 +7,7 @@ export const custom_theme = agGrid.themeQuartz.withParams({
     headerColumnBorder: true,
     headerColumnResizeHandleHeight: "0%",
     columnBorder: true,
+    inputFocusShadow: false,
 });
 
 export class grid_button_renderer_class {
