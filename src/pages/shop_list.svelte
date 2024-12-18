@@ -3,7 +3,9 @@
         display: flex;
         height: 100%;
         flex-direction: column;
-        gap: 16px;
+        padding: 0 16px;
+        background-color: #FFFFFF;
+        gap: 8px;
     }
     .div_title{
         display: flex;
@@ -11,31 +13,18 @@
         height: 48px;
         align-items: center;
         justify-content: space-between;
-        background-color: #FFFFFF;
-        padding: 0 16px;
         font-weight: 600;
+        border-bottom: 1px solid rgba(0, 0, 0, 20%);
     }
-    .div_content{
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        background-color: #FFFFFF;
-        padding: 16px;
-        flex-grow: 1;
-    }
-    .div_shop_cnt{
-        font-weight: bold;
-        letter-spacing: 1px;
+    .sub_title{
+        font-size: 13px;
+        font-weight: 400;
     }
     .div_grid{
         width: 100%;
         height: 100%;
     }
 
-    .div_add_title{
-        background-color: #5AB65A;
-        color: #FFFFFF !important;
-    }
     .div_modal_header{
         width: 100%;
         height: 48px;
@@ -48,14 +37,6 @@
         font-weight: 700;
         box-sizing: border-box;
         box-shadow: 0 -1px 0 0 #D1D1D1 inset;
-    }
-    .div_modal_footer{
-        display: flex;
-        width: 100%;
-        height: 48px;
-        align-items: center;
-        justify-content: center;
-        gap: 16px;
     }
     .btn_close{
         display: flex;
@@ -70,40 +51,42 @@
 
     .div_shop_modal{
         display: grid;
-        width: 400px;
+        width: 368px;
         grid-template-columns: 72px 1fr;
-        padding: 16px;
+        padding: 16px 16px 8px;
         row-gap: 8px;
         column-gap: 4px;
-        height: 72vh;
         overflow-y: auto;
+        background-color: rgba(0, 0, 0, 3%);
     }
     .div_shop_modal>div{
         display: flex;
-        height: 32px;
+        height: 28px;
         align-items: center;
-    }
-    .div_shop_modal .grid_th{
-        font-size: 14px;
-        font-weight: 400;
         gap: 2px;
     }
+    .div_shop_modal .grid_th{
+        font-size: 13px;
+        font-weight: 400;
+    }
     .div_shop_modal .grid_td input{
+        flex-grow: 1;
         width: 100%;
         height: 100%;
-        border: 1px solid #949494;
+        border: 1px solid rgba(0,0,0,40%);
         padding: 4px 8px;
-        font-size: 15px;
-        font-weight: 700;
+        font-size: 14px;
+        font-weight: 500;
     }
     .div_shop_modal .grid_td input::placeholder{
+        font-size: 13px;
         opacity: 60%;
         font-weight: 400;
     }
     .div_shop_modal .grid_td textarea{
         flex-grow: 1;
         height: 100%;
-        border: 1px solid #949494;
+        border: 1px solid rgba(0,0,0,40%);
         resize: none;
         padding: 8px;
         font-size: 16px;
@@ -112,13 +95,22 @@
     .div_shop_modal .grid_td select{
         width: auto;
         height: 100%;
-        border: 1px solid #949494;
+        border: 1px solid rgba(0,0,0,40%);
         padding: 4px 8px;
-        font-size: 15px;
-        font-weight: 700;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .div_shop_modal .grid_td input:focus,
+    .div_shop_modal .grid_td textarea:focus,
+    .div_shop_modal .grid_td select:focus{
+        background-color: #e3f0ff;
     }
     .div_shop_modal .input_business_license.success{
         border: 1px solid #1fa835;
+    }
+    .btn_duplicate{
+        flex-shrink: 0;
+        height: 100%;
     }
     .div_shop_modal .div_address{
         flex-direction: column;
@@ -137,27 +129,59 @@
     .div_zipcode_modal{
         width: 500px;
     }
+    .div_create_dt{
+        flex-grow: 1;
+        text-align: center;
+        line-height: 110%;
+        font-size: 12px;
+    }
+    .shop_modal_footer{
+        display: flex;
+        width: 100%;
+        height: 48px;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background-color: rgba(0, 0, 0, 3%);
+    }
+    .shop_modal_footer>button{
+        height: 32px;
+        width: 64px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+    .shop_modal_footer>.btn_delete{
+        position: absolute;
+        left: 8px;
+        width: 48px;
+    }
 
     .font_red{
         color: red;
+    }
+
+    :global(.ag-header-cell-label){
+        justify-content: center;
+    }
+    :global(.text_right){
+        text-align: right;
     }
 </style>
 
 <div class="div_contain">
     <div class="div_title">
-        <div>거래처 관리</div>
+        <div>
+            <span>거래처 관리</span>
+            <span class="sub_title">/ {comma(shop_cnt)}건</span>
+        </div>
         <button type="button" on:click={on_click_add_shop}>추가</button>
     </div>
-    <div class="div_content">
-        <div class="div_shop_cnt">총 {comma(shop_cnt)}건</div>
-        <div bind:this={this_grid} class="ag-theme-quartz div_grid"></div>
-    </div>
+    <div bind:this={this_grid} class="div_grid"></div>
 </div>
 
 <Modal bind:modal={shop_modal}>
     <div slot="header"
-         on:click={shop_modal.hide}
-         class:div_add_title={modal_type === "insert"} class="div_modal_header">
+         on:click={shop_modal.hide} class="div_modal_header">
         {#if modal_type === "insert"}
             거래처 추가
         {:else}
@@ -179,7 +203,11 @@
                    class:success={shop_obj.BUSINESS_LICENSE_CHECK}
                    class="input_business_license"
                    placeholder="숫자만 입력해주세요." maxlength="12">
-            <button type="button" on:click={on_click_duplicate_check} disabled={shop_obj.BUSINESS_LICENSE_CHECK}>중복확인</button>
+            <button type="button" on:click={on_click_duplicate_check}
+                    class="btn_duplicate"
+                    disabled={shop_obj.BUSINESS_LICENSE_CHECK}>
+                중복확인
+            </button>
         </div>
         <div class="grid_th">대표자명</div>
         <div class="grid_td"><input type="text" bind:value={shop_obj.CEO_NAME}></div>
@@ -195,8 +223,8 @@
         <div class="grid_td">
             <input type="text" bind:value={shop_obj.EMAIL} placeholder="예시) example@gmail.com" maxlength="35">
         </div>
-        <div class="grid_th" style="height: 104px">주소</div>
-        <div class="grid_td div_address" style="height: 104px;">
+        <div class="grid_th" style="height: 90px">주소</div>
+        <div class="grid_td div_address" style="height: 90px;">
             <div class="div_zipcode">
                 <input type="text" bind:value={shop_obj.ZIPCODE} disabled>
                 <button type="button" on:click={zipcode_modal.show}>주소찾기</button>
@@ -204,22 +232,24 @@
             <input type="text" bind:value={shop_obj.ADDRESS1}>
             <input type="text" bind:value={shop_obj.ADDRESS2} placeholder="상세주소를 입력해주세요.">
         </div>
-        <div class="grid_th" style="height: 72px;">메모</div>
-        <div class="grid_td" style="height: 72px;"><textarea type="text" bind:value={shop_obj.MEMO}/></div>
+        <div class="grid_th" style="height: 64px;">메모</div>
+        <div class="grid_td" style="height: 64px;"><textarea type="text" bind:value={shop_obj.MEMO}/></div>
         <div class="grid_th">상태</div>
         <div class="grid_td">
             <select bind:value={shop_obj.STATUS}>
                 <option value="1">사용</option>
                 <option value="0">미사용</option>
             </select>
+            {#if shop_obj.SHOP_NO !== null}
+                <div class="div_create_dt">거래처 생성일<br/> {shop_obj.FIRST_CREATE_DT}</div>
+            {/if}
         </div>
     </div>
-    <div slot="footer" class="div_modal_footer">
-        <button type="button" on:click={shop_modal.hide}>닫기</button>
-        <button type="button" on:click={on_click_save}>저장</button>
+    <div slot="footer" class="shop_modal_footer">
         {#if modal_type === "update"}
-            <button type="button" on:click={on_click_delete}>삭제</button>
+            <button type="button" on:click={on_click_delete} class="btn_delete">삭제</button>
         {/if}
+        <button type="button" on:click={on_click_save}>저장</button>
     </div>
 </Modal>
 
@@ -241,9 +271,7 @@
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
-    import "ag-grid-community/styles/ag-grid.css";
-    import "ag-grid-community/styles/ag-theme-quartz.css";
-    import {grid_button_renderer_class} from "../js/grid_class.js";
+    import {grid_button_renderer_class,custom_theme} from "../js/grid_common.js";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
     import {
@@ -272,6 +300,7 @@
         ZIPCODE: "",
         MEMO: "",
         STATUS: "1",
+        FIRST_CREATE_DT: "",
         BUSINESS_LICENSE_CHECK: false
     });
 
@@ -495,69 +524,87 @@
     // 가맹점 목록 그리드
     function grid_options_init(){
         const update_btn_renderer_params = {
-            inner_html: `<button class="btn_update btn_grid btn_blue">정보수정</button>`,
+            inner_html: `<button class="btn_update">수정</button>`,
             add_class: `.btn_update`,
             function_name : grid_row_update,
         };
         const column_defs = [
             {
-                flex:1,
                 cellRenderer: grid_button_renderer_class,
-                cellRendererParams: update_btn_renderer_params
+                cellRendererParams: update_btn_renderer_params,
+                width: 60
             },
             {
-                headerName: "거래처코드",
+                headerName: "코드",
                 field: "SHOP_NO",
-                flex:1
+                width: 45
             },
             {
                 headerName: "거래처명",
                 field: "SHOP_NAME",
-                flex:1
+                width: 150
             },
             {
                 headerName: "사업자번호",
                 field: "BUSINESS_LICENSE",
-                flex:1
+                width: 120
             },
             {
                 headerName: "휴대폰번호",
                 field: "MOBILE",
-                flex:1
+                width: 120
             },
             {
                 headerName: "전화번호",
                 field: "TEL",
-                flex:1
+                width: 120
+            },
+            {
+                headerName: "대표자명",
+                field: "CEO_NAME",
+                width: 70
             },
             {
                 headerName: "주소",
                 field: "ADDRESS1",
-                flex:1,
+                width: 100,
                 valueFormatter: (param)=>{
                     return `${g_nvl(param.data.ADDRESS1)} ${g_nvl(param.data.ADDRESS2)}`;
                 }
             },
             {
-                headerName: "대표자명",
-                field: "CEO_NAME",
-                flex:1
-            },
-            {
                 headerName: "메모",
                 field: "MEMO",
-                flex:1
+                width: 100
             },
             {
-                headerName: "거래처등록일",
-                field: "SALES_TYPE",
-                flex:1
+                headerName: "생성일자",
+                field: "FIRST_CREATE_DT",
+                width: 100,
+                cellRenderer: (param)=>{
+                    return param.data.FIRST_CREATE_DT.split(" ")[0];
+                }
             }
         ];
 
         const grid_options = {
+            theme: custom_theme,
             columnDefs: column_defs,
             rowData: null,
+            headerHeight: 32,
+            floatingFiltersHeight: 32,
+            defaultColDef: {
+                filter: true,
+                floatingFilter: true,
+                suppressFloatingFilterButton: true,
+                suppressHeaderFilterButton: true
+            },
+            onFirstDataRendered(event) {
+                grid_api.sizeColumnsToFit();
+            },
+            onGridSizeChanged(event){
+                grid_api.sizeColumnsToFit();
+            },
             overlayLoadingTemplate: "<div class='grid_loading'></div>",
             overlayNoRowsTemplate: `<span>등록된 거래처가 없습니다.</span>`
         }

@@ -72,13 +72,12 @@
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
-    import "ag-grid-community/styles/ag-grid.css";
-    import "ag-grid-community/styles/ag-theme-quartz.css";
     import Datepicker_custom from "../../public/assets/component/Datepicker_custom.svelte";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
 
     import {number_formatter, uc, comma} from "../js/common.js";
+    import {custom_theme} from "../js/grid_common.js";
     import {exec_all, exec_transaction, QR_L_SALES_PAYMENT, QR_L_SHOP, QR_M_PAYMENT} from "../js/local_db.js";
 
     const shop_schema = ()=>({
@@ -270,6 +269,7 @@
         ];
 
         const grid_options = {
+            theme: custom_theme,
             columnDefs: column_defs,
             rowSelection: {
                 mode: "singleRow",
@@ -319,6 +319,7 @@
         ];
 
         const grid_options = {
+            theme: custom_theme,
             columnDefs: column_defs,
             rowData: null,
             loading:false,

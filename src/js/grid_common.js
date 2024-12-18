@@ -1,3 +1,13 @@
+import * as agGrid from "ag-grid-community";
+
+export const custom_theme = agGrid.themeQuartz.withParams({
+    spacing: 4,
+    borderRadius: 0,
+    wrapperBorderRadius: 0,
+    headerColumnBorder: true,
+    headerColumnResizeHandleHeight: "0%",
+    columnBorder: true,
+});
 
 export class grid_button_renderer_class {
     //init = 렌더러를 사용하기 전에 한 번 호출됩니다.
@@ -6,6 +16,7 @@ export class grid_button_renderer_class {
 
         // 셀 만들기
         this.eGui = document.createElement("div");
+        this.eGui.style = "height: 100%;display: flex;padding: 2px;";
         this.eGui.innerHTML = params.inner_html;
 
         // elements 참조

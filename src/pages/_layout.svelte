@@ -9,24 +9,27 @@
         display: flex;
         flex-direction: column;
         flex-shrink: 0;
-        width: 200px;
+        width: 136px;
         height: 100%;
-        background-color: #FFFFFF;
-        padding: 0 16px;
     }
     .div_menu_bar>div{
         display: flex;
         height: 48px;
-        align-content: center;
+        align-items: center;
         gap: 8px;
+        padding-left: 12px;
     }
     .div_menu_bar>div:not(div:first-of-type):hover{
         font-weight: bold;
     }
     .div_content{
         flex-grow: 1;
-        background-color: #f1f1f1;
         padding: 16px 16px 0;
+        background-color: rgba(0, 0, 0, 3%);
+    }
+
+    .active{
+        background-color: rgba(0, 0, 0, 3%);
     }
 </style>
 
@@ -34,7 +37,8 @@
     <div class="div_menu_bar">
         <div on:click={$goto("/")}>SALES_NOTE</div>
         {#each menu_arr as value}
-            <div on:click={()=>{on_click_go_menu(value.menu_url)}}>
+            <div on:click={()=>{on_click_go_menu(value.menu_url)}}
+                 class:active={value.menu_url === path}>
                 {#if value.icon === "shop"}
                     <Icon_shop/>
                 {:else if value.icon === "box"}
@@ -56,7 +60,7 @@
 <Confirm/>
 
 <script>
-    import { goto } from '@roxi/routify';
+    import { goto,afterPageLoad } from '@roxi/routify';
     import Alert from "../../public/assets/component/Alert.svelte";
     import Confirm from "../../public/assets/component/Confirm.svelte";
     import Icon_coin from "../../public/assets/component/icon/Icon_coin.svelte";
@@ -71,6 +75,14 @@
         {menu_name: "판매 내역", menu_url: "/sales_list", icon: ""},
         {menu_name: "미수금 관리", menu_url: "/outstanding_balance", icon: ""}
     ];
+
+    let path = "";
+
+    $afterPageLoad(page => {
+        let body = document.querySelector("body");
+        body.style.overflow = "auto";
+        path = location.pathname;
+    });
 
     function on_click_go_menu(url){
         $goto(url);

@@ -232,13 +232,11 @@
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
-    import "ag-grid-community/styles/ag-grid.css";
-    import "ag-grid-community/styles/ag-theme-quartz.css";
     import Icon_chevron_right from "../../public/assets/component/icon/Icon_chevron_right.svelte";
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Icon_setting from "../../public/assets/component/icon/Icon_setting.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
-    import {grid_button_renderer_class} from "../js/grid_class.js";
+    import {custom_theme, grid_button_renderer_class} from "../js/grid_common.js";
     import {byte_check, comma, validate_emojis, number_formatter, arr_to_obj} from "../js/common.js";
     import {
         exec_all,
@@ -545,6 +543,7 @@
         ];
 
         const grid_options = {
+            theme: custom_theme,
             columnDefs: column_defs,
             rowSelection: {
                 mode: "singleRow",
@@ -634,6 +633,7 @@
         ];
 
         const grid_options = {
+            theme: custom_theme,
             columnDefs: column_defs,
             rowData: null,
             loading: false,

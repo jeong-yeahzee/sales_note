@@ -39,9 +39,8 @@
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
-    import "ag-grid-community/styles/ag-grid.css";
-    import "ag-grid-community/styles/ag-theme-quartz.css";
     import {arr_to_obj, dc_price_calc, g_nvl, number_formatter} from "../js/common.js";
+    import {custom_theme} from "../js/grid_common.js";
     import {
         exec_all, exec_transaction,
         QR_L_BRAND, QR_L_PRODUCT_DC, QR_L_SHOP, QR_M_PRODUCT_DC
@@ -294,6 +293,7 @@
         ];
 
         const grid_options = {
+            theme: custom_theme,
             columnDefs: column_defs,
             rowData: null,
             loading: false,

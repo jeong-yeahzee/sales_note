@@ -27,10 +27,9 @@
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
-    import "ag-grid-community/styles/ag-grid.css";
-    import "ag-grid-community/styles/ag-theme-quartz.css";
     import Datepicker_custom from "../../public/assets/component/Datepicker_custom.svelte";
     import { number_formatter } from "../js/common.js";
+    import {custom_theme} from "../js/grid_common.js";
     import {exec_all, QR_L_SALES} from "../js/local_db.js";
 
     let search_obj = {
@@ -145,6 +144,7 @@
         ];
 
         const grid_options = {
+            theme: custom_theme,
             columnDefs: column_defs,
             rowData: null,
             loading: false,

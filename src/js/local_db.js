@@ -79,7 +79,7 @@ export const QR_L_SALES_PAYMENT = ()=>(`
         TP.TOTAL_CALC_AMOUNT AS TOTAL_AMOUNT,
         TP.PAY_TYPE AS SALES_TYPE,
         '납부' AS TYPE
-    FROM TBL_PAYMENT TP WHERE SHOP_NO = ?;`);
+    FROM TBL_PAYMENT TP WHERE SHOP_NO = ? ORDER BY SHOW_DT DESC;`);
 
 // 거래처 추가/수정
 export const QR_M_SHOP = ()=>(`
