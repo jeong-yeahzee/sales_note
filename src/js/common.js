@@ -62,7 +62,7 @@ export function byte_check(text) {
  */
 export function number_formatter(params) {
     // 그리드일때
-    if(params.value !== undefined) {
+    if(params?.value !== undefined) {
         return Math.floor(params.value).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
     }
 

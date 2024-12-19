@@ -480,7 +480,7 @@
         return await exec_transaction(param);
     }
 
-    // 가맹점 목록 그리드
+    // 거래처 목록 그리드
     function grid_options_init(){
         const update_btn_renderer_params = {
             inner_html: `<button class="btn_update">수정</button>`,

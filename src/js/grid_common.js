@@ -3,11 +3,12 @@ import * as agGrid from "ag-grid-community";
 export const custom_theme = agGrid.themeQuartz.withParams({
     spacing: 4,
     borderRadius: 0,
+    checkboxBorderRadius: 2,
     wrapperBorderRadius: 0,
     headerColumnBorder: true,
     headerColumnResizeHandleHeight: "0%",
-    columnBorder: true,
     inputFocusShadow: false,
+    columnBorder: true
 });
 
 export class grid_button_renderer_class {
