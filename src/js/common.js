@@ -1,3 +1,12 @@
+let timer; // debounce timer
+
+/** 입력값 debounce */
+export function debounce_exec(func, ms = 100){
+    clearTimeout(timer);
+    timer = setTimeout(async () => {
+        await func();
+    }, ms);
+}
 
 /** 빈값 체크 */
 export function g_nvl(text, replace_text) {
@@ -8,7 +17,7 @@ export function g_nvl(text, replace_text) {
 
 /** 콤마찍기 */
 export function comma(str) {
-    str = String(Number(String(g_nvl(str, "0")).replace(/[^0-9-]/g,"")));
+    str = String(Number(String(g_nvl(str, "")).replace(/[^0-9-]/g,"")));
     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
 }
 
@@ -60,15 +69,15 @@ export function byte_check(text) {
  * 끝에서 세자리 수마다 콤마(,) 찍어준다.
  * 예) 1234567 => 1,234,567
  */
-export function number_formatter(params) {
+export function number_formatter(params, str = "0") {
     // 그리드일때
     if(params?.value !== undefined) {
-        return Math.floor(params.value).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+        return comma(uc(params.value)) == "0" ? str : comma(uc(params.value));
     }
 
     // 그리드 아닐때
-    if(!isNaN(params)){
-        return Math.floor(params).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+    if(!isNaN(uc(params))){
+        return comma(uc(params)) == "0" ? str : comma(uc(params));
     }
 }
 

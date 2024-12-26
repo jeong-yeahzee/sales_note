@@ -93,6 +93,80 @@ button:disabled{
     cursor: default;
 }
 
+/*버튼 공통 스타일*/
+button.blue,
+:global(.sales_modal button.blue){
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #5588A3;
+    color: #FFFFFF;
+}
+button.blue:not(:disabled):hover,
+button.blue:not(:disabled):focus{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #5588A3;
+}
+button.green{
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #3E8F3E;
+    color: #FFFFFF;
+}
+button.green:not(:disabled):hover{
+    background: linear-gradient(0deg, #3E8F3E 0%, #3E8F3E 100%), #5588A3;
+}
+button.gray{
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #F5F5F5;
+    color: #5C657F;
+}
+button.gray:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+button.white{
+    border: none;
+    background: #FFF;
+    color: #000;
+}
+button.white:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+button.red{
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #D93A00;
+    color: #FFF;
+}
+button.red:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #D93A00;
+}
+button.orange{
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #D97300;
+    color: #FFF;
+}
+button.orange:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #D97300;
+}
+
+button.border_blue{
+    border: 1px solid #3187BF;
+    background: #FFFFFF;
+    color: #3187BF;
+}
+button.border_blue:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+button.border_gray{
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #F5F5F5;
+    color: #5C657F;
+}
+button.border_red{
+    border: 1px solid #FF334B;
+    background: #FFF;
+    color: #FF334B;
+}
+button.border_red:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+
 .grid_loading{
     width: 48px;
     height: 48px;

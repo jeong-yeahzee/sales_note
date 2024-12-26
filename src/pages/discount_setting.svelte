@@ -218,9 +218,8 @@
     let this_product_grid, product_grid_api;
 
     $:{
-        // TODO: 해당 함수 수정해야함
-        dc_percent = number_formatter(dc_percent);
-        dc_price = number_formatter(dc_price);
+        dc_percent = number_formatter(dc_percent, "");
+        dc_price = number_formatter(dc_price, "");
     }
 
     onMount(async ()=>{

@@ -26,6 +26,7 @@
         flex-grow: 1;
         padding: 16px 16px 0;
         background-color: rgba(0, 0, 0, 3%);
+        min-width: 882px;
     }
 
     .active{
@@ -75,6 +76,12 @@
                     <Icon_box/>
                 {:else if value.icon === "discount"}
                     <Icon_coin/>
+                {:else if value.icon === "create"}
+                    <Icon_add/>
+                {:else if value.icon === "list"}
+                    <Icon_list/>
+                {:else if value.icon === "cashbook"}
+                    <Icon_cashbook/>
                 {/if}
                 <div>{value.menu_name}</div>
             </div>
@@ -93,7 +100,10 @@
     import { goto,afterPageLoad } from '@roxi/routify';
     import Alert from "../../public/assets/component/Alert.svelte";
     import Confirm from "../../public/assets/component/Confirm.svelte";
+    import Icon_add from "../../public/assets/component/icon/Icon_add.svelte";
+    import Icon_cashbook from "../../public/assets/component/icon/Icon_cashbook.svelte";
     import Icon_coin from "../../public/assets/component/icon/Icon_coin.svelte";
+    import Icon_list from "../../public/assets/component/icon/Icon_list.svelte";
     import Icon_shop from "../../public/assets/component/icon/Icon_shop.svelte";
     import Icon_box from "../../public/assets/component/icon/Icon_box.svelte";
 
@@ -101,9 +111,9 @@
         {menu_name: "거래처 관리", menu_url: "/shop_list", icon: "shop"},
         {menu_name: "상품 관리", menu_url: "/product_list", icon: "box"},
         {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "discount"},
-        {menu_name: "판매 입력", menu_url: "/create_sales", icon: ""},
-        {menu_name: "판매 내역", menu_url: "/sales_list", icon: ""},
-        {menu_name: "미수금 관리", menu_url: "/outstanding_balance", icon: ""}
+        {menu_name: "판매 입력", menu_url: "/create_sales", icon: "create"},
+        {menu_name: "판매 내역", menu_url: "/sales_list", icon: "list"},
+        {menu_name: "미수금 관리", menu_url: "/outstanding_balance", icon: "cashbook"}
     ];
 
     let path = "";
