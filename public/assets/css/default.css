@@ -94,8 +94,7 @@ button:disabled{
 }
 
 /*버튼 공통 스타일*/
-button.blue,
-:global(.sales_modal button.blue){
+button.blue{
     border: 1px solid rgba(0, 0, 0, 0.40);
     background: #5588A3;
     color: #FFFFFF;

@@ -1,11 +1,33 @@
 <style>
     .div_contain{
         display: flex;
+        height: 100%;
         flex-direction: column;
+        padding: 0 16px;
+        background-color: #FFFFFF;
+        gap: 8px;
+    }
+    .div_title{
+        display: flex;
+        flex-shrink: 0;
+        height: 48px;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(0, 0, 0, 20%);
+    }
+    .content{
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    .shop_blank{
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 100%;
         height: 100%;
-        gap: 16px;
-        background-color: #FFFFFF;
+        background-color: rgba(0, 0, 0, 3%);
     }
 
     /*그리드 기본 스타일*/
@@ -14,57 +36,147 @@
         height: 50%;
     }
 
-    .modal_header{
+    .payment_modal{
+        display: grid;
+        width: 312px;
+        grid-template-columns: 82px 1fr;
+        padding: 16px 16px 8px;
+        row-gap: 8px;
+        column-gap: 4px;
+        overflow-y: auto;
+        background-color: rgba(0, 0, 0, 3%);
+    }
+    .payment_modal>div{
+        display: flex;
+        height: 28px;
+        align-items: center;
+        gap: 2px;
+    }
+    .payment_modal .grid_th{
+        font-size: 13px;
+        font-weight: 400;
+    }
+    .payment_modal .grid_td input{
+        flex-grow: 1;
+        width: 100%;
+        height: 100%;
+        border: 1px solid rgba(0,0,0,40%);
+        padding: 4px 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .payment_modal .grid_td input::placeholder{
+        font-size: 13px;
+        opacity: 60%;
+        font-weight: 400;
+    }
+    .payment_modal .grid_td textarea{
+        flex-grow: 1;
+        height: 100%;
+        border: 1px solid rgba(0,0,0,40%);
+        resize: none;
+        padding: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .payment_modal .grid_td select{
+        width: auto;
+        height: 100%;
+        border: 1px solid rgba(0,0,0,40%);
+        padding: 4px 8px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .payment_modal .grid_td input:focus,
+    .payment_modal .grid_td textarea:focus,
+    .payment_modal .grid_td select:focus{
+        background-color: #e3f0ff;
+    }
+    .payment_modal .outstanding_amount{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 48px;
+        gap: 16px;
+        font-size: 13px;
+        grid-column: 1 / span 2;
+        background-color: #FFF;
+    }
+    .outstanding_amount>b{
+        font-size: 17px;
+    }
+    .payment_modal_footer{
+        display: flex;
         width: 100%;
         height: 48px;
-        padding: 16px 8px;
-        display: flex;
         align-items: center;
-        justify-content: space-between;
-        color: #3C4359;
+        justify-content: center;
+        gap: 16px;
+        background-color: rgba(0, 0, 0, 3%);
+    }
+    .payment_modal_footer>button{
+        height: 32px;
+        width: 56px;
         font-size: 14px;
         font-weight: 700;
-        box-sizing: border-box;
-        box-shadow: 0 -1px 0 0 #D1D1D1 inset;
+        border-radius: 2px;
+    }
+    .payment_modal_footer .save{
+        width: 80px;
+    }
+    .font_blue{
+        color: #5588A3;
+    }
+    .d_none{
+        display: none;
     }
 </style>
 <div class="div_contain">
-    <div bind:this={this_shop_grid} class="ag-theme-quartz div_grid"></div>
-    <div style="flex-grow: 1;">
-        <div>
-            {shop_obj.SHOP_NAME}
-            <button type="button" on:click={payment_modal.show()}>납부하기</button>
+    <div class="div_title">미수금 관리</div>
+    <div class="content">
+        <div bind:this={this_shop_grid} class="ag-theme-quartz div_grid"></div>
+        <div style="flex-grow: 1;" class:d_none={shop_obj.SHOP_NO === ""}>
+            <div>
+                {shop_obj.SHOP_NAME}
+                <button type="button" on:click={payment_modal.show()}>납부하기</button>
+            </div>
+            <div bind:this={this_detail_grid} class="ag-theme-quartz div_grid"></div>
         </div>
-        <div bind:this={this_detail_grid} class="ag-theme-quartz div_grid"></div>
+        <div class="shop_blank" class:d_none={shop_obj.SHOP_NO !== ""}>거래처를 선택해주세요.</div>
     </div>
 </div>
 <Modal bind:modal={payment_modal}>
     <div slot="header" class="modal_header">
         <span>미수금 납부</span>
-        <button class="modal_close_icon" on:click={payment_modal.hide}>
+        <button type="button" on:click={payment_modal.hide()} class="modal_close_icon">
             <Icon_close/>
         </button>
     </div>
-    <div slot="content" class="div_product_modal">
-        <div>현재미수금: {shop_obj.TOTAL_SALES_OUTSTANDING}</div>
-        <label>납부일자</label>
-        <Datepicker_custom bind:date={payment_obj.PAY_DT}/>
-        <label>현금</label>
-        <input type="text" bind:value={payment_obj.CASH_AMOUNT}>
-        <label>카드</label>
-        <input type="text" bind:value={payment_obj.CARD_AMOUNT}>
-        <label>할인</label>
-        <input type="text" bind:value={payment_obj.DISCOUNT_AMOUNT}>
-        <label>총 납입금액</label>
-        {comma(payment_obj.PAYMENT_AMOUNT)}
-        <label>납입 후 미수금</label>
-        {shop_obj.TOTAL_SALES_OUTSTANDING - (Number(uc(payment_obj.PAYMENT_AMOUNT)) + Number(uc(payment_obj.DISCOUNT_AMOUNT)))}
-        <label>메모</label>
-        <textarea bind:value={payment_obj.MEMO}></textarea>
+    <div slot="content" class="payment_modal">
+        <div class="outstanding_amount">
+            <span>현재 미수금</span>
+            <b class="font_blue">{comma(shop_obj.TOTAL_SALES_OUTSTANDING)}</b>
+        </div>
+        <div class="grid_th">납부일자</div>
+        <div class="grid_td"><Datepicker_custom bind:date={payment_obj.PAY_DT}/></div>
+        <div class="grid_th">현금</div>
+        <div class="grid_td"><input type="text" bind:value={payment_obj.CASH_AMOUNT}></div>
+        <div class="grid_th">카드</div>
+        <div class="grid_td"><input type="text" bind:value={payment_obj.CARD_AMOUNT}></div>
+        <div class="grid_th">할인</div>
+        <div class="grid_td"><input type="text" bind:value={payment_obj.DISCOUNT_AMOUNT}></div>
+        <div class="grid_th">총 납입금액</div>
+        <div class="grid_td">{comma(payment_obj.PAYMENT_AMOUNT)}</div>
+        <div class="grid_th">납입 후 미수금</div>
+        <div class="grid_td">{comma(shop_obj.TOTAL_SALES_OUTSTANDING - (Number(uc(payment_obj.PAYMENT_AMOUNT)) + Number(uc(payment_obj.DISCOUNT_AMOUNT))))}</div>
+        <div class="grid_th" style="height: 48px;">메모</div>
+        <div class="grid_td" style="height: 48px;">
+            <textarea bind:value={payment_obj.MEMO}></textarea>
+        </div>
     </div>
-    <div slot="footer">
-        <button type="button" on:click={payment_modal.hide()}>닫기</button>
-        <button type="button" on:click={on_click_payment_save}>납부하기</button>
+    <div slot="footer" class="payment_modal_footer">
+        <button type="button" on:click={payment_modal.hide()} class="border_gray">닫기</button>
+        <button type="button" on:click={on_click_payment_save} class="save blue">납부하기</button>
     </div>
 </Modal>
 <script>
