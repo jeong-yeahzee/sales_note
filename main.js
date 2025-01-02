@@ -1,17 +1,21 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const static = require("node-static");
+const http = require("http");
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 
 let main_window;
 // SQLite 데이터베이스 파일 경로
-const db_path = path.join(__dirname, "sales_note_db.sqlite");
+const db_path = (process.env.NODE_ENV === "development") ? path.join(__dirname, "sales_note_db.sqlite") : path.join(app.getPath("userData"), "sales_note_db.sqlite");
 // 데이터베이스 연결 (없으면 자동 생성됨)
 const db = new sqlite3.Database(db_path);
+let server;
 
 app.on("ready", async ()=>{
   main_window = new BrowserWindow({
     width: 1200,
     height: 768,
+    icon: path.join(__dirname, "favicon.ico"),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -22,19 +26,29 @@ app.on("ready", async ()=>{
   // 메뉴바 없애기
   Menu.setApplicationMenu(null);
 
-  // 개발자 도구 열기
-  main_window.webContents.openDevTools();
-
   // 데이터베이스 초기화
   await init_db();
 
   // 보여줄 화면
-  main_window.loadURL('http://localhost:3000');
+  if (process.env.NODE_ENV === "development") main_window.webContents.openDevTools();
+  else {
+    // 정적 파일 서버를 위한 객체 생성
+    const file = new static.Server(path.join(__dirname, "dist"));
 
+    server = http.createServer(function (req, res) {
+      // 요청에 대해 파일을 서빙
+      file.serve(req, res);
+    }).listen(3000, () => {});
+  }
+
+  await main_window.loadURL("http://localhost:3000");
 });
 
 app.on("window-all-closed", () => {
   if (process.platform !== 'darwin'){
+    if(server){
+      server.close();
+    }
     db.close();
     app.quit();
   }
