@@ -100,6 +100,9 @@
         border-left: 1px solid rgba(0, 0, 0, 20%);
         border-right: 1px solid rgba(0, 0, 0, 20%);
     }
+    .sales_grid_content.grid_row{
+        grid-auto-rows: min-content;
+    }
     .sales_grid_bottom{
         display: grid;
         grid-template-columns: 12% 25% 6% 10% 5% 6% 10% 10% 10% 6%;
@@ -173,7 +176,11 @@
         border-radius: 4px;
     }
     .sales_grid_search :global(.search_input){
+        width: 100%;
         background-color: transparent;
+    }
+    .sales_grid_search :global(.search_input .option){
+        padding: 6px 4px;
     }
     .bottom_block{
         display: flex;
@@ -237,7 +244,7 @@
                     <div class="grid_td">{product_obj.BRAND_NAME}</div>
                     <div class="grid_td edit_input">
                         <Autocomplete
-                                bind:autocomplete={autocomplete}
+                                bind:autocomplete_input={autocomplete}
                                 bind:value={product_obj.PRODUCT_NAME}
                                 bind:data={autocomplete_data}
                                 on:blur={on_blur_autocomplete}
@@ -276,7 +283,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="sales_grid_content">
+                <div class="sales_grid_content" class:grid_row={sales_arr.length > 0}>
                     {#if sales_arr.length === 0}
                         <div class="product_blank">입력된 판매상품이 없습니다.</div>
                     {:else}
@@ -569,7 +576,7 @@
 
         alert("저장되었습니다.");
         // 판매 입력 정보 초기화
-        grid_api.setGridOption("rowData", []);
+        sales_arr = [];
     }
 
     // 거래처정보 가져오기

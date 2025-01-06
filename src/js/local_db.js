@@ -1,4 +1,11 @@
-
+export const QR_S_TOTAL_STATISTIC = () => (`SELECT
+    IFNULL((SELECT SUM(TOTAL_SALES_OUTSTANDING) FROM TBL_SHOP), 0) AS SUM_OUTSTANDING,
+    IFNULL((SELECT SUM(TOTAL_SALES_PRICE_OUT) FROM TBL_SALES WHERE strftime('%Y-%m', SALES_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_PRICE_OUT,
+    IFNULL((SELECT SUM(TOTAL_SALES_DC_PRICE_OUT) FROM TBL_SALES WHERE strftime('%Y-%m', SALES_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_DC_PRICE_OUT,
+    IFNULL((SELECT SUM(CARD_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_CARD_AMOUNT,
+    IFNULL((SELECT SUM(CASH_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_CASH_AMOUNT,
+    IFNULL((SELECT SUM(DISCOUNT_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_DISCOUNT_AMOUNT;`
+);
 // 상품 조건 검색
 export const QR_S_PRODUCT_DC_PRICE = (type = "all") => {
     let result_str = `

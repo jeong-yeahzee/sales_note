@@ -82,6 +82,8 @@
                     <Icon_list/>
                 {:else if value.icon === "cashbook"}
                     <Icon_cashbook/>
+                {:else if value.icon === "trash"}
+                    <Icon_trash/>
                 {/if}
                 <div>{value.menu_name}</div>
             </div>
@@ -106,6 +108,7 @@
     import Icon_list from "../../public/assets/component/icon/Icon_list.svelte";
     import Icon_shop from "../../public/assets/component/icon/Icon_shop.svelte";
     import Icon_box from "../../public/assets/component/icon/Icon_box.svelte";
+    import Icon_trash from "../../public/assets/component/icon/Icon_trash.svelte";
 
     const menu_arr = [
         {menu_name: "거래처 관리", menu_url: "/shop_list", icon: "shop"},
@@ -113,7 +116,8 @@
         {menu_name: "판매가 설정", menu_url: "/discount_setting", icon: "discount"},
         {menu_name: "판매 입력", menu_url: "/create_sales", icon: "create"},
         {menu_name: "판매 내역", menu_url: "/sales_list", icon: "list"},
-        {menu_name: "미수금 관리", menu_url: "/outstanding_balance", icon: "cashbook"}
+        {menu_name: "미수금 관리", menu_url: "/outstanding_balance", icon: "cashbook"},
+        {menu_name: "휴지통", menu_url: "/delete_list", icon: "trash"}
     ];
 
     let path = "";
