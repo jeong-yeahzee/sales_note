@@ -4,11 +4,15 @@ export const QR_S_TOTAL_STATISTIC = () => (`SELECT
     IFNULL((SELECT SUM(TOTAL_SALES_DC_PRICE_OUT) FROM TBL_SALES WHERE strftime('%Y-%m', SALES_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_DC_PRICE_OUT,
     IFNULL((SELECT SUM(CARD_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_CARD_AMOUNT,
     IFNULL((SELECT SUM(CASH_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_CASH_AMOUNT,
-    IFNULL((SELECT SUM(DISCOUNT_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_DISCOUNT_AMOUNT;`
+    IFNULL((SELECT SUM(DISCOUNT_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now')), 0) AS SUM_DISCOUNT_AMOUNT,
+    IFNULL((SELECT SUM(TOTAL_SALES_PRICE_OUT) FROM TBL_SALES WHERE strftime('%Y-%m', SALES_DT) = strftime('%Y-%m', 'now', '-1 month')), 0) AS PREV_SUM_PRICE_OUT,
+    IFNULL((SELECT SUM(TOTAL_SALES_DC_PRICE_OUT) FROM TBL_SALES WHERE strftime('%Y-%m', SALES_DT) = strftime('%Y-%m', 'now', '-1 month')), 0) AS PREV_SUM_DC_PRICE_OUT,
+    IFNULL((SELECT SUM(CARD_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now', '-1 month')), 0) AS PREV_SUM_CARD_AMOUNT,
+    IFNULL((SELECT SUM(CASH_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now', '-1 month')), 0) AS PREV_SUM_CASH_AMOUNT,
+    IFNULL((SELECT SUM(DISCOUNT_AMOUNT) FROM TBL_PAYMENT WHERE strftime('%Y-%m', PAY_DT) = strftime('%Y-%m', 'now', '-1 month')), 0) AS PREV_SUM_DISCOUNT_AMOUNT;`
 );
 // 상품 조건 검색
-export const QR_S_PRODUCT_DC_PRICE = (type = "all") => {
-    let result_str = `
+export const QR_S_PRODUCT_DC_PRICE = () => (`
         SELECT
             TP.BRAND_NO,
             TB.BRAND_NAME,
@@ -22,25 +26,14 @@ export const QR_S_PRODUCT_DC_PRICE = (type = "all") => {
                  LEFT JOIN TBL_BRAND TB ON TB.BRAND_NO = TP.BRAND_NO
                  LEFT JOIN TBL_PRODUCT_DC TPD ON
                     TPD.PRODUCT_NO = TP.PRODUCT_NO AND
-                    TPD.SHOP_NO = ?`;
-
-    if(type === "number" || type === "all"){
-        result_str += ` WHERE TP.PRODUCT_NO = ?`;
-    }
-    if(type === "all"){
-        result_str += ` AND `;
-    }else{
-        result_str += ` WHERE `;
-    }
-    if(type === "text" || type === "all"){
-        result_str += `TP.PRODUCT_NAME LIKE ?`;
-    }
-
-    return result_str + ";";
-};
+                    TPD.SHOP_NO = ?
+            WHERE TP.PRODUCT_NAME LIKE ?;`);
 
 // 판매 마스터번호 조회
 export const QR_S_SALES_MASTER_NO = ()=>(`SELECT COALESCE((SELECT SEQ+1 FROM sqlite_sequence WHERE name='TBL_SALES'), 0) AS MASTER_NO;`);
+
+// 납부내역 조회
+export const QR_S_PAYMENT = ()=>(`SELECT * FROM TBL_PAYMENT WHERE PAY_NO = ?;`);
 
 // 거래처 전체 조회
 export const QR_L_SHOP = ()=>(`SELECT * FROM TBL_SHOP ORDER BY SHOP_NAME;`);
@@ -76,17 +69,32 @@ export const QR_L_SALES = ()=>(`
 export const QR_L_SALES_PAYMENT = ()=>(`
     SELECT
         MAX(TS.SALES_DT) AS SHOW_DT,
-        SUM(TS.TOTAL_SALES_DC_PRICE_OUT) AS TOTAL_AMOUNT,
-        MAX(TS.SALES_TYPE) AS SALES_TYPE,
-        '판매' AS TYPE
-    FROM TBL_SALES TS WHERE SHOP_NO = ? GROUP BY MASTER_NO
+        SUM(TS.TOTAL_SALES_DC_PRICE_OUT) AS TOTAL_SALES_AMOUNT,
+        CASE
+            WHEN MAX(TS.SALES_TYPE) = '1' THEN '판매'
+            WHEN MAX(TS.SALES_TYPE) = '2' THEN '반품'
+        END AS SALES_TYPE,
+        '1' AS TYPE,
+        NULL
+    FROM TBL_SALES TS 
+    WHERE SHOP_NO = ? AND SALES_DT BETWEEN ? AND ? 
+    GROUP BY MASTER_NO
     UNION ALL
     SELECT
         TP.PAY_DT AS SHOW_DT,
-        TP.TOTAL_CALC_AMOUNT AS TOTAL_AMOUNT,
-        TP.PAY_TYPE AS SALES_TYPE,
-        '납부' AS TYPE
-    FROM TBL_PAYMENT TP WHERE SHOP_NO = ? ORDER BY SHOW_DT DESC;`);
+        TP.PAYMENT_AMOUNT AS TOTAL_PAYMENT_AMOUNT,
+        CASE
+            WHEN TP.PAY_TYPE = '1' THEN '납부'
+            WHEN TP.PAY_TYPE = '2' THEN '관리자 수정'
+        END AS SALES_TYPE,
+        CASE
+            WHEN TP.PAY_TYPE = '1' THEN '2'
+            WHEN TP.PAY_TYPE = '2' THEN '3'
+        END AS TYPE,
+        TP.PAY_NO
+    FROM TBL_PAYMENT TP 
+    WHERE SHOP_NO = ? AND PAY_DT BETWEEN ? AND ?
+    ORDER BY SHOW_DT DESC;`);
 
 // 거래처 추가/수정
 export const QR_M_SHOP = ()=>(`

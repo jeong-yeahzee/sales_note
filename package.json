@@ -35,7 +35,7 @@
     },
     "directories": {
       "buildResources": "./dist",
-      "output": "./build",
+      "output": "./sales_note_setup",
       "app": "."
     }
   },

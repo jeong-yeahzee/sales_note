@@ -597,7 +597,7 @@
     // 상품 할인 가격정보 조회
     async function DB_S_PRODUCT_DC_PRICE(){
         const param = {
-            query: QR_S_PRODUCT_DC_PRICE("text"),
+            query: QR_S_PRODUCT_DC_PRICE(),
             value: [shop_obj.SHOP_NO, `%${product_obj.PRODUCT_NAME}%`]
         };
         return await exec_all(param);

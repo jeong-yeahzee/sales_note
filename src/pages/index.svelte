@@ -58,7 +58,7 @@
     </div>
     <div class="block">
         <div class="header">
-            <span class="title">{dayjs().format("M")}월 매출</span>
+            <span class="title">당월 매출</span>
             <span class="amount">{comma(total_data.SUM_DC_PRICE_OUT)}</span>
         </div>
         <div class="content">
@@ -76,7 +76,7 @@
     </div>
     <div class="block">
         <div class="header">
-            <span class="title">{dayjs().format("M")}월 수금</span>
+            <span class="title">당월 수금</span>
             <span class="amount">{comma(Number(total_data.SUM_CARD_AMOUNT)+Number(total_data.SUM_CASH_AMOUNT))}</span>
         </div>
         <div class="content">
@@ -90,6 +90,42 @@
         <div class="content">
             <span class="title">할인합계</span>
             <span class="amount">{comma(total_data.SUM_DISCOUNT_AMOUNT)}</span>
+        </div>
+    </div>
+    <div class="block">
+        <div class="header">
+            <span class="title">전월 매출</span>
+            <span class="amount">{comma(total_data.PREV_SUM_DC_PRICE_OUT)}</span>
+        </div>
+        <div class="content">
+            <span class="title">표준판매가합계</span>
+            <span class="amount">{comma(total_data.PREV_SUM_PRICE_OUT)}</span>
+        </div>
+        <div class="content">
+            <span class="title">할인합계</span>
+            <span class="amount">{comma(Number(total_data.PREV_SUM_PRICE_OUT)-Number(total_data.PREV_SUM_DC_PRICE_OUT))}</span>
+        </div>
+        <div class="content">
+            <span class="title">할인판매가합계</span>
+            <span class="amount">{comma(total_data.PREV_SUM_DC_PRICE_OUT)}</span>
+        </div>
+    </div>
+    <div class="block">
+        <div class="header">
+            <span class="title">전월 수금</span>
+            <span class="amount">{comma(Number(total_data.PREV_SUM_CARD_AMOUNT)+Number(total_data.PREV_SUM_CASH_AMOUNT))}</span>
+        </div>
+        <div class="content">
+            <span class="title">카드합계</span>
+            <span class="amount">{comma(total_data.PREV_SUM_CARD_AMOUNT)}</span>
+        </div>
+        <div class="content">
+            <span class="title">현금합계</span>
+            <span class="amount">{comma(total_data.PREV_SUM_CASH_AMOUNT)}</span>
+        </div>
+        <div class="content">
+            <span class="title">할인합계</span>
+            <span class="amount">{comma(total_data.PREV_SUM_DISCOUNT_AMOUNT)}</span>
         </div>
     </div>
 </div>
@@ -106,7 +142,12 @@
         SUM_DC_PRICE_OUT: 0,
         SUM_CARD_AMOUNT: 0,
         SUM_CASH_AMOUNT: 0,
-        SUM_DISCOUNT_AMOUNT: 0
+        SUM_DISCOUNT_AMOUNT: 0,
+        PREV_SUM_PRICE_OUT: 0,
+        PREV_SUM_DC_PRICE_OUT: 0,
+        PREV_SUM_CARD_AMOUNT: 0,
+        PREV_SUM_CASH_AMOUNT: 0,
+        PREV_SUM_DISCOUNT_AMOUNT: 0
     };
 
     onMount(async ()=>{
