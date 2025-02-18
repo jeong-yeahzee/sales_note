@@ -27,7 +27,7 @@ export const QR_S_PRODUCT_DC_PRICE = () => (`
                  LEFT JOIN TBL_PRODUCT_DC TPD ON
                     TPD.PRODUCT_NO = TP.PRODUCT_NO AND
                     TPD.SHOP_NO = ?
-            WHERE TP.PRODUCT_NAME LIKE ?;`);
+            WHERE TP.PRODUCT_NAME LIKE CONCAT('%', ?, '%');`);
 
 // 판매 마스터번호 조회
 export const QR_S_SALES_MASTER_NO = ()=>(`SELECT COALESCE((SELECT SEQ+1 FROM sqlite_sequence WHERE name='TBL_SALES'), 0) AS MASTER_NO;`);
@@ -95,6 +95,19 @@ export const QR_L_SALES_PAYMENT = ()=>(`
     FROM TBL_PAYMENT TP 
     WHERE SHOP_NO = ? AND PAY_DT BETWEEN ? AND ?
     ORDER BY SHOW_DT DESC;`);
+
+// 거래처 삭제 내역 전체 조회
+export const QR_BACKUP_L_SHOP = ()=>(`SELECT * FROM BACKUP_TBL_SHOP ORDER BY DELETE_DT DESC, SHOP_NAME;`);
+// 브랜드 삭제 내역 전체 조회
+export const QR_BACKUP_L_BRAND = ()=>(`SELECT * FROM BACKUP_TBL_BRAND ORDER BY DELETE_DT DESC, BRAND_NAME;`);
+// 상품 삭제 내역 전체 조회
+export const QR_BACKUP_L_PRODUCT = ()=>(`SELECT * FROM BACKUP_TBL_PRODUCT ORDER BY DELETE_DT DESC, PRODUCT_NAME;`);
+// 판매 삭제 내역  조회
+export const QR_BACKUP_L_SALES = ()=>(`
+    SELECT *
+    FROM BACKUP_TBL_SALES
+    WHERE (SHOP_NO = ? OR ? IS NULL)
+    ORDER BY DELETE_DT DESC, SALES_DT DESC;`);
 
 // 거래처 추가/수정
 export const QR_M_SHOP = ()=>(`
@@ -219,9 +232,11 @@ export const QR_D_PAYMENT = ()=>(`DELETE FROM TBL_PAYMENT WHERE PAY_NO = ?;`);
 export const QR_C_BUSINESS_LICENSE = ()=>(`SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = ?) AS IS_CHECK;`);
 
 // 메인 프로세스에 sql 쿼리 요청 ( 조회용 )
-export async function exec_all(param){
+export async function exec_all(data){
     try {
-        console.log(param);
+        console.log("data", data);
+        const param = make_param(data);
+        console.log("param", param);
         const result = await window.electron.db_all(param);
         console.log("db_all",result);
         return result;
@@ -245,9 +260,11 @@ export async function exec_check(param){
 }
 
 // 메인 프로세스에 sql 쿼리 요청 ( 추가/수정/삭제용 )
-export async function exec_transaction(param){
+export async function exec_transaction(data){
     try {
-        console.log(param);
+        console.log("data", data);
+        const param = array_make_param(data);
+        console.log("param", param);
         const result = await window.electron.db_transaction(param);
         console.log("db_transaction",result);
         return result;
@@ -255,4 +272,45 @@ export async function exec_transaction(param){
         console.error('DB 조회 실패:', e.message);
         return false;
     }
+}
+
+function make_param(data){
+    const param = {
+        query: data.query,
+        value: []
+    }
+
+    for(const key in data){
+        if(key.indexOf("in") > -1){
+            param.value.push(data[key]);
+        }
+    }
+
+    return param;
+}
+
+function array_make_param(data){
+    const param = {
+        query: "",
+        value: []
+    }
+
+    // 단건 저장일때 체크
+    if(!Array.isArray(data)) data = [data];
+
+    for(const value of data){
+        const new_arr = [];
+
+        if (param.query == "") param.query = value.query;
+
+        for(const key in value){
+            if(key.indexOf("in") > -1){
+                new_arr.push(value[key]);
+            }
+        }
+
+        param.value.push(new_arr);
+    }
+
+    return param;
 }

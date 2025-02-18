@@ -234,7 +234,7 @@
     });
 
     // 선택 적용 클릭시
-    function on_click_dc_price_apply(type=""){
+    function on_click_dc_price_apply(){
         const selected_data = product_grid_api.getSelectedRows();
 
         if(Number(dc_percent) === 0 && Number(dc_price) === 0){
@@ -325,8 +325,7 @@
     // 거래처 정보 조회
     async function DB_L_SHOP(){
         const param = {
-            query: QR_L_SHOP(),
-            value: []
+            query: QR_L_SHOP()
         };
         return await exec_all(param);
     }
@@ -334,8 +333,7 @@
     // 브랜드 조회
     async function DB_L_BRAND(){
         const param = {
-            query: QR_L_BRAND(),
-            value: []
+            query: QR_L_BRAND()
         };
         return await exec_all(param);
     }
@@ -344,29 +342,28 @@
     async function DB_L_PRODUCT_DC(data){
         const param = {
             query: QR_L_PRODUCT_DC(),
-            value: [data.SHOP_NO]
+            in1: data.SHOP_NO
         };
         return await exec_all(param);
     }
 
     // 할인율/할인가 정보 추가
     async function DB_M_PRODUCT_DC(data_arr){
-        const param = {
-            query: QR_M_PRODUCT_DC(),
-            value: []
-        };
+        const array_param = [];
 
         // 여러건 한번에 저장할때 매개변수 위치 맞추기
         for(const data of data_arr){
-            param.value.push([
-                shop_obj.SHOP_NO,
-                data.BRAND_NO,
-                data.PRODUCT_NO,
-                data.DISCOUNT_PERCENT,
-                data.DISCOUNT_PRICE
-            ]);
+            const param = {
+                query: QR_M_PRODUCT_DC(),
+                in1: shop_obj.SHOP_NO,
+                in2: data.BRAND_NO,
+                in3: data.PRODUCT_NO,
+                in4: data.DISCOUNT_PERCENT,
+                in5: data.DISCOUNT_PRICE
+            }
+            array_param.push(param);
         }
-        return await exec_transaction(param);
+        return await exec_transaction(array_param);
     }
 
     // 거래처 목록 그리드

@@ -57,12 +57,10 @@
     async function DB_L_SALES(){
         const param = {
             query: QR_L_SALES(),
-            value: [
-                search_obj.SHOP_NO,
-                search_obj.SHOP_NO,
-                search_obj.START_DT,
-                search_obj.END_DT
-            ]
+            in1: search_obj.SHOP_NO,
+            in2: search_obj.SHOP_NO,
+            in3: search_obj.START_DT,
+            in4: search_obj.END_DT
         }
         return await exec_all(param);
     }
@@ -70,6 +68,11 @@
     // 판매 그리드
     function grid_options_init(){
         const column_defs = [
+            {
+                headerName: "판매일",
+                field: "SALES_DT",
+                flex:1
+            },
             {
                 headerName: "전표번호",
                 field: "MASTER_NO",

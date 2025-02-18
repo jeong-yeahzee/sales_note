@@ -588,8 +588,7 @@
     // 거래처 정보 조회
     async function DB_L_SHOP(){
         const param = {
-            query: QR_L_SHOP(),
-            value: []
+            query: QR_L_SHOP()
         };
         return await exec_all(param);
     }
@@ -598,7 +597,8 @@
     async function DB_S_PRODUCT_DC_PRICE(){
         const param = {
             query: QR_S_PRODUCT_DC_PRICE(),
-            value: [shop_obj.SHOP_NO, `%${product_obj.PRODUCT_NAME}%`]
+            in1: shop_obj.SHOP_NO,
+            in2: product_obj.PRODUCT_NAME
         };
         return await exec_all(param);
     }
@@ -606,8 +606,7 @@
     // 판매 마스터번호 조회
     async function DB_S_SALES_MASTER_NO(){
         const param = {
-            query: QR_S_SALES_MASTER_NO(),
-            value: []
+            query: QR_S_SALES_MASTER_NO()
         }
 
         const result = await exec_all(param);
@@ -616,10 +615,7 @@
 
     // 판매등록
     async function DB_I_SALES(data_arr){
-        const param = {
-            query: QR_I_SALES(),
-            value: []
-        };
+        const array_param = [];
 
         // 판매 묶어주는 master_no 조회
         const master_no = await DB_S_SALES_MASTER_NO();
@@ -627,27 +623,30 @@
         // 여러건 한번에 저장할때 매개변수 위치 맞추기
         for(const data of data_arr){
             const sales_type = "1"; // 1:판매, 2:반품
-            param.value.push([
-                master_no,
-                shop_obj.SHOP_NO,
-                shop_obj.SHOP_NAME,
-                data.BRAND_NO,
-                data.BRAND_NAME,
-                data.PRODUCT_NO,
-                data.PRODUCT_NAME,
-                data.SALES_COUNT,
-                data.DISCOUNT_PERCENT,
-                data.DISCOUNT_PRICE,
-                data.SALES_PRICE_OUT,
-                data.SALES_DC_PRICE_OUT,
-                data.TOTAL_SALES_PRICE_OUT,
-                data.TOTAL_SALES_DC_PRICE_OUT,
-                sales_type,
-                sales_date
-            ]);
+            const param = {
+                query: QR_I_SALES(),
+                in1: master_no,
+                in2: shop_obj.SHOP_NO,
+                in3: shop_obj.SHOP_NAME,
+                in4: data.BRAND_NO,
+                in5: data.BRAND_NAME,
+                in6: data.PRODUCT_NO,
+                in7: data.PRODUCT_NAME,
+                in8: data.SALES_COUNT,
+                in9: data.DISCOUNT_PERCENT,
+                in10: data.DISCOUNT_PRICE,
+                in11: data.SALES_PRICE_OUT,
+                in12: data.SALES_DC_PRICE_OUT,
+                in13: data.TOTAL_SALES_PRICE_OUT,
+                in14: data.TOTAL_SALES_DC_PRICE_OUT,
+                in15: sales_type,
+                in16: sales_date
+            };
+
+            array_param.push(param);
         }
 
-        return await exec_transaction(param);
+        return await exec_transaction(array_param);
     }
 
     // 거래처 목록 그리드

@@ -678,8 +678,7 @@
     // 브랜드 조회
     async function DB_L_BRAND(){
         const param = {
-            query: QR_L_BRAND(),
-            value: []
+            query: QR_L_BRAND()
         };
         return await exec_all(param);
     }
@@ -687,8 +686,7 @@
     // 상품 조회
     async function DB_L_PRODUCT(){
         const param = {
-            query: QR_L_PRODUCT(),
-            value: []
+            query: QR_L_PRODUCT()
         };
         return await exec_all(param);
     }
@@ -697,12 +695,10 @@
     async function DB_M_BRAND(data){
         const param = {
             query: QR_M_BRAND(),
-            value: [[
-                data.BRAND_NO,
-                data.BRAND_NAME,
-                data.STATUS,
-                data.MEMO
-            ]]
+            in1: data.BRAND_NO,
+            in2: data.BRAND_NAME,
+            in3: data.STATUS,
+            in4: data.MEMO
         }
         return await exec_transaction(param);
     }
@@ -711,16 +707,14 @@
     async function DB_M_PRODUCT(data){
         const param = {
             query: QR_M_PRODUCT(),
-            value: [[
-                data.BRAND_NO,
-                data.PRODUCT_NO,
-                data.PRODUCT_NAME,
-                uc(data.PRICE_IN),
-                uc(data.PRICE_OUT),
-                data.ORDER_NO,
-                data.STATUS,
-                data.MEMO
-            ]]
+            in1: data.BRAND_NO,
+            in2: data.PRODUCT_NO,
+            in3: data.PRODUCT_NAME,
+            in4: uc(data.PRICE_IN),
+            in5: uc(data.PRICE_OUT),
+            in6: data.ORDER_NO,
+            in7: data.STATUS,
+            in8: data.MEMO
         }
         return await exec_transaction(param);
     }
@@ -729,7 +723,7 @@
     async function DB_D_BRAND(data){
         const param = {
             query: QR_D_BRAND(),
-            value: [data.BRAND_NO]
+            in1: data.BRAND_NO
         }
         return await exec_transaction(param);
     }
@@ -738,7 +732,7 @@
     async function DB_D_PRODUCT(data){
         const param = {
             query: QR_D_PRODUCT(),
-            value: [data.PRODUCT_NO]
+            in1: data.PRODUCT_NO
         }
         return await exec_transaction(param);
     }

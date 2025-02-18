@@ -131,7 +131,6 @@
 </div>
 
 <script>
-    import dayjs from "dayjs";
     import {onMount} from "svelte";
     import {comma} from "../js/common.js";
     import {exec_all, QR_S_TOTAL_STATISTIC} from "../js/local_db.js";
@@ -151,15 +150,14 @@
     };
 
     onMount(async ()=>{
-        total_data = (await DB_S_TOTAL_STATISTIC())[0];
+        total_data = await DB_S_TOTAL_STATISTIC();
     });
 
     // 통계 조회
     async function DB_S_TOTAL_STATISTIC(){
         const param = {
-            query: QR_S_TOTAL_STATISTIC(),
-            value: []
+            query: QR_S_TOTAL_STATISTIC()
         };
-        return await exec_all(param);
+        return (await exec_all(param))[0];
     }
 </script>

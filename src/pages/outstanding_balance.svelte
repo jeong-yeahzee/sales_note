@@ -454,7 +454,7 @@
     async function DB_S_PAYMENT(data){
         const param = {
             query: QR_S_PAYMENT(),
-            value: [data.PAY_NO]
+            in1: data.PAY_NO
         }
         return await exec_all(param);
     }
@@ -462,8 +462,7 @@
     // 거래처 정보 조회
     async function DB_L_SHOP(){
         const param = {
-            query: QR_L_SHOP(),
-            value: []
+            query: QR_L_SHOP()
         };
         return await exec_all(param);
     }
@@ -472,14 +471,12 @@
     async function DB_L_SALES_PAYMENT(data){
         const param = {
             query: QR_L_SALES_PAYMENT(),
-            value: [
-                data.SHOP_NO,
-                data.START_DT,
-                data.END_DT,
-                data.SHOP_NO,
-                data.START_DT,
-                data.END_DT
-            ]
+            in1: data.SHOP_NO,
+            in2: data.START_DT,
+            in3: data.END_DT,
+            in4: data.SHOP_NO,
+            in5: data.START_DT,
+            in6: data.END_DT
         };
         return await exec_all(param);
     }
@@ -488,12 +485,10 @@
     async function DB_L_SALES(data){
         const param = {
             query: QR_L_SALES(),
-            value: [
-                data.SHOP_NO,
-                data.SHOP_NO,
-                data.START_DT,
-                data.END_DT
-            ]
+            in1: data.SHOP_NO,
+            in2: data.SHOP_NO,
+            in3: data.START_DT,
+            in4: data.END_DT
         }
         return await exec_all(param);
     }
@@ -502,19 +497,17 @@
     async function DB_M_PAYMENT(data){
         const param = {
             query: QR_M_PAYMENT(),
-            value: [[
-                data.PAY_NO,
-                data.PAY_TYPE,
-                data.SHOP_NO,
-                data.CASH_AMOUNT,
-                data.CARD_AMOUNT,
-                data.DISCOUNT_AMOUNT,
-                data.PAYMENT_AMOUNT,
-                data.ADMIN_AMOUNT,
-                data.TOTAL_CALC_AMOUNT,
-                data.MEMO,
-                data.PAY_DT
-            ]]
+            in1: data.PAY_NO,
+            in2: data.PAY_TYPE,
+            in3: data.SHOP_NO,
+            in4: data.CASH_AMOUNT,
+            in5: data.CARD_AMOUNT,
+            in6: data.DISCOUNT_AMOUNT,
+            in7: data.PAYMENT_AMOUNT,
+            in8: data.ADMIN_AMOUNT,
+            in9: data.TOTAL_CALC_AMOUNT,
+            in10: data.MEMO,
+            in11: data.PAY_DT
         };
         return await exec_transaction(param);
     }

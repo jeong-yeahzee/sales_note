@@ -387,7 +387,7 @@
             const result = await DB_D_SHOP(shop_obj);
 
             // DB 저장 실행일때
-            if(!result || result !== 1){
+            if(!result){
                 return alert("삭제 실패\n재시도 부탁드립니다.");
             }
 
@@ -434,8 +434,7 @@
     // 거래처 정보 조회
     async function DB_L_SHOP(){
         const param = {
-            query: QR_L_SHOP(),
-            value: []
+            query: QR_L_SHOP()
         };
         return await exec_all(param);
     }
@@ -444,7 +443,7 @@
     async function DB_C_BUSINESS_LICENSE(data){
         const param = {
             query: QR_C_BUSINESS_LICENSE(),
-            value: [data.BUSINESS_LICENSE]
+            in1: data.BUSINESS_LICENSE
         };
         return await exec_check(param);
     }
@@ -453,20 +452,18 @@
     async function DB_M_SHOP(data){
         const param = {
             query: QR_M_SHOP(),
-            value: [[
-                data.SHOP_NO,
-                data.SHOP_NAME,
-                data.STATUS,
-                data.BUSINESS_LICENSE,
-                data.TEL,
-                data.MOBILE,
-                data.EMAIL,
-                data.ADDRESS1,
-                data.ADDRESS2,
-                data.ZIPCODE,
-                data.CEO_NAME,
-                data.MEMO
-            ]]
+            in1: data.SHOP_NO,
+            in2: data.SHOP_NAME,
+            in3: data.STATUS,
+            in4: data.BUSINESS_LICENSE,
+            in5: data.TEL,
+            in6: data.MOBILE,
+            in7: data.EMAIL,
+            in8: data.ADDRESS1,
+            in9: data.ADDRESS2,
+            in10: data.ZIPCODE,
+            in11: data.CEO_NAME,
+            in12: data.MEMO
         };
         return await exec_transaction(param);
     }
@@ -475,7 +472,7 @@
     async function DB_D_SHOP(data){
         const param = {
             query: QR_D_SHOP(),
-            value: [data.SHOP_NO]
+            in1: data.SHOP_NO
         };
         return await exec_transaction(param);
     }

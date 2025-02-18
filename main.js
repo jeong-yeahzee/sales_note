@@ -262,6 +262,7 @@ const backup_shop = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_SHOP (
                       ZIPCODE TEXT,
                       CEO_NAME TEXT,
                       MEMO TEXT,
+                      TOTAL_SALES_OUTSTANDING INTEGER NOT NULL DEFAULT 0,
                       FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                       LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                       DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -318,24 +319,7 @@ const backup_sales = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_SALES (
                         DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                       );`;
 
-const backup_payment = `CREATE TABLE IF NOT EXISTS BACKUP_TBL_PAYMENT (
-                          DELETE_NO INTEGER PRIMARY KEY AUTOINCREMENT,
-                          PAY_NO INTEGER NOT NULL,
-                          PAY_TYPE TEXT NOT NULL,
-                          SHOP_NO INTEGER NOT NULL,
-                          CASH_AMOUNT INTEGER,
-                          CARD_AMOUNT INTEGER,
-                          DISCOUNT_AMOUNT INTEGER,
-                          PAYMENT_AMOUNT INTEGER,
-                          ADMIN_AMOUNT INTEGER,
-                          MEMO TEXT,
-                          PAY_DT TEXT NOT NULL,
-                          FIRST_CREATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                          LAST_UPDATE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                          DELETE_DT TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-                        );`;
-
-  return shop+brand+product+dc+sales+payment+backup_shop+backup_brand+backup_product+backup_sales+backup_payment;
+  return shop+brand+product+dc+sales+payment+backup_shop+backup_brand+backup_product+backup_sales;
 }
 
 // 트리거 생성하는 쿼리
@@ -475,39 +459,6 @@ function create_trigger_query(){
           OLD.TOTAL_SALES_DC_PRICE_OUT,
           OLD.SALES_TYPE,
           OLD.SALES_DT,
-          OLD.FIRST_CREATE_DT,
-          OLD.LAST_UPDATE_DT
-        );
-    END;
-    CREATE TRIGGER IF NOT EXISTS TRIG_TBL_PAYMENT
-    BEFORE DELETE ON TBL_PAYMENT
-    FOR EACH ROW
-    BEGIN
-        INSERT INTO BACKUP_TBL_PAYMENT (
-          PAY_NO,
-          PAY_TYPE,
-          SHOP_NO,
-          CASH_AMOUNT,
-          CARD_AMOUNT,
-          DISCOUNT_AMOUNT,
-          PAYMENT_AMOUNT,
-          ADMIN_AMOUNT,
-          MEMO,
-          PAY_DT,
-          FIRST_CREATE_DT,
-          LAST_UPDATE_DT
-        )
-        VALUES (
-          OLD.PAY_NO,
-          OLD.PAY_TYPE,
-          OLD.SHOP_NO,
-          OLD.CASH_AMOUNT,
-          OLD.CARD_AMOUNT,
-          OLD.DISCOUNT_AMOUNT,
-          OLD.PAYMENT_AMOUNT,
-          OLD.ADMIN_AMOUNT,
-          OLD.MEMO,
-          OLD.PAY_DT,
           OLD.FIRST_CREATE_DT,
           OLD.LAST_UPDATE_DT
         );
