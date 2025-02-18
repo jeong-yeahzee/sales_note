@@ -446,7 +446,7 @@
     import Icon_setting from "../../public/assets/component/icon/Icon_setting.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
     import {custom_theme, grid_button_renderer_class} from "../js/grid_common.js";
-    import {byte_check, comma, validate_emojis, number_formatter, arr_to_obj, uc} from "../js/common.js";
+    import {byte_check, comma, validate_emojis, arr_to_obj, uc, int_formatter} from "../js/common.js";
     import {
         exec_all,
         exec_transaction,
@@ -512,8 +512,8 @@
         }
     }
     $:{
-        product_modal_obj.PRICE_IN = number_formatter(product_modal_obj.PRICE_IN);
-        product_modal_obj.PRICE_OUT = number_formatter(product_modal_obj.PRICE_OUT);
+        product_modal_obj.PRICE_IN = int_formatter(product_modal_obj.PRICE_IN);
+        product_modal_obj.PRICE_OUT = int_formatter(product_modal_obj.PRICE_OUT);
     }
 
     onMount(async ()=>{
@@ -824,14 +824,14 @@
                 field: "PRICE_IN",
                 width: 90,
                 cellClass: ["text_right"],
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "판매가",
                 field: "PRICE_OUT",
                 width: 90,
                 cellClass: ["text_right"],
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "메모",
@@ -842,7 +842,7 @@
                 headerName: "순서",
                 field: "ORDER_NO",
                 width: 45,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "상태",

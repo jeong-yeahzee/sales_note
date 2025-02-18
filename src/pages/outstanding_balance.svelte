@@ -271,7 +271,7 @@
     import Icon_close from "../../public/assets/component/icon/Icon_close.svelte";
     import Modal from "../../public/assets/component/Modal.svelte";
 
-    import {number_formatter, uc, comma} from "../js/common.js";
+    import {uc, comma, int_formatter} from "../js/common.js";
     import {custom_theme} from "../js/grid_common.js";
     import {
         exec_all,
@@ -549,7 +549,7 @@
                 headerName: "미수금",
                 field: "TOTAL_SALES_OUTSTANDING",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
         ];
 
@@ -589,13 +589,13 @@
                 headerName: "판매금액",
                 field: "TOTAL_SALES_AMOUNT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "납부금액",
                 field: "TOTAL_PAYMENT_AMOUNT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "판매/납부",
@@ -636,13 +636,13 @@
                 headerName: "판매금액",
                 field: "TOTAL_SALES_AMOUNT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "납부금액",
                 field: "TOTAL_PAYMENT_AMOUNT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "판매/납부",

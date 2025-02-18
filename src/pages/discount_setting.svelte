@@ -163,7 +163,10 @@
                     <div>할인율</div>
                     <div>
                         <div class="value_box">
-                            <input type="text" bind:value={dc_percent} class="input_dc"/>
+                            <input type="text"
+                                   bind:value={dc_percent}
+                                   on:blur={on_blur_number_check}
+                                   class="input_dc"/>
                             <span>%</span>
                         </div>
                     </div>
@@ -176,7 +179,9 @@
                     <div>할인가</div>
                     <div>
                         <div class="value_box">
-                            <input type="text" bind:value={dc_price} class="input_dc"/>
+                            <input type="text"
+                                   bind:value={dc_price}
+                                   class="input_dc"/>
                             <span>원</span>
                         </div>
                     </div>
@@ -196,7 +201,7 @@
     import {onMount} from "svelte";
 
     import * as agGrid from "ag-grid-community";
-    import {arr_to_obj, comma, dc_price_calc, g_nvl, number_formatter} from "../js/common.js";
+    import {arr_to_obj, dc_price_calc, g_nvl, int_formatter, number_formatter} from "../js/common.js";
     import {custom_theme} from "../js/grid_common.js";
     import {
         exec_all, exec_transaction,
@@ -219,7 +224,9 @@
 
     $:{
         dc_percent = number_formatter(dc_percent, "");
-        dc_price = number_formatter(dc_price, "");
+    }
+    $:{
+        dc_price = int_formatter(dc_price, "");
     }
 
     onMount(async ()=>{
@@ -291,6 +298,11 @@
         alert("저장되었습니다.");
         // 상품 할인 정보 재조회
         await get_product_dc();
+    }
+
+    // 숫자 체크
+    function on_blur_number_check(e){
+        e.target.value = Number(e.target.value);
     }
 
     // 거래처정보 가져오기
@@ -452,7 +464,7 @@
                 field: "PRICE_OUT",
                 width: 90,
                 cellClass: ["text_right"],
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인율",
@@ -466,7 +478,7 @@
                 field: "DISCOUNT_PRICE",
                 width: 90,
                 cellClass: ["text_right"],
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인판매가",
@@ -477,7 +489,7 @@
                     params.data.DC_PRICE_OUT = dc_price_calc(params.data);
                     return params.data.DC_PRICE_OUT;
                 },
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "상태",

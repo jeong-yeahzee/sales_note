@@ -17,7 +17,7 @@ export function g_nvl(text, replace_text) {
 
 /** 콤마찍기 */
 export function comma(str) {
-    str = String(Number(String(g_nvl(str, "")).replace(/[^0-9-]/g,"")));
+    str = String(g_nvl(str, "")).replace(/[^0-9-.]/g,"");
     return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, "$1,");
 }
 
@@ -66,7 +66,7 @@ export function byte_check(text) {
 }
 
 /**
- * 끝에서 세자리 수마다 콤마(,) 찍어준다.
+ * 끝에서 세자리 수마다 콤마(,) 찍어준다. ( 소수점 가능 )
  * 예) 1234567 => 1,234,567
  */
 export function number_formatter(params, str = "0") {
@@ -78,6 +78,22 @@ export function number_formatter(params, str = "0") {
     // 그리드 아닐때
     if(!isNaN(uc(params))){
         return comma(uc(params)) == "0" ? str : comma(uc(params));
+    }
+}
+
+/**
+ * 끝에서 세자리 수마다 콤마(,) 찍어준다.
+ * 예) 1234567 => 1,234,567
+ */
+export function int_formatter(params, str = "0") {
+    // 그리드일때
+    if(params?.value !== undefined) {
+        return comma(Number(uc(params.value))) == "0" ? str : comma(Number(uc(params.value)));
+    }
+
+    // 그리드 아닐때
+    if(!isNaN(uc(params))){
+        return comma(Number(uc(params))) == "0" ? str : comma(Number(uc(params)));
     }
 }
 

@@ -138,7 +138,7 @@
     import * as agGrid from "ag-grid-community";
     import Icon_arrow from "../../public/assets/component/icon/Icon_arrow.svelte";
     import {custom_theme} from "../js/grid_common.js";
-    import {comma, g_nvl, number_formatter} from "../js/common.js";
+    import {comma, g_nvl, int_formatter} from "../js/common.js";
     import {
         exec_all,
         QR_BACKUP_L_SHOP,
@@ -242,14 +242,14 @@
                 field: "PRICE_IN",
                 width: 90,
                 cellClass: ["text_right"],
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "판매가",
                 field: "PRICE_OUT",
                 width: 90,
                 cellClass: ["text_right"],
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "메모",
@@ -260,7 +260,7 @@
                 headerName: "순서",
                 field: "ORDER_NO",
                 width: 45,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "상태",
@@ -321,37 +321,37 @@
                 headerName: "판매단가",
                 field: "SALES_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인율",
                 field: "DISCOUNT_PERCENT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인가",
                 field: "DISCOUNT_PRICE",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인판매단가",
                 field: "SALES_DC_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "판매가합계",
                 field: "TOTAL_SALES_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인판매가합계",
                 field: "TOTAL_SALES_DC_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             }
         ],
         default: [

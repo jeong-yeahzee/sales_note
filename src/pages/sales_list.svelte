@@ -28,7 +28,7 @@
 
     import * as agGrid from "ag-grid-community";
     import Datepicker_custom from "../../public/assets/component/Datepicker_custom.svelte";
-    import { number_formatter } from "../js/common.js";
+    import {int_formatter, number_formatter} from "../js/common.js";
     import {custom_theme} from "../js/grid_common.js";
     import {exec_all, QR_L_SALES} from "../js/local_db.js";
 
@@ -112,7 +112,7 @@
                 headerName: "판매단가",
                 field: "SALES_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인율",
@@ -124,25 +124,25 @@
                 headerName: "할인가",
                 field: "DISCOUNT_PRICE",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인판매단가",
                 field: "SALES_DC_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "판매가합계",
                 field: "TOTAL_SALES_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             },
             {
                 headerName: "할인판매가합계",
                 field: "TOTAL_SALES_DC_PRICE_OUT",
                 flex:1,
-                valueFormatter: number_formatter
+                valueFormatter: int_formatter
             }
         ];
 
