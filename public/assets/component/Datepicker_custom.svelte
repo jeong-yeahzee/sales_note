@@ -31,8 +31,9 @@
 
     .date_wrap .input{
         padding: 4px;
-        width: 80px;
+        width: 86px;
         flex:1;
+        text-align: center;
     }
     .disabled_cursor{
         cursor: no-drop;

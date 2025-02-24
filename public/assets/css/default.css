@@ -129,11 +129,11 @@ button.white:not(:disabled):hover{
 }
 button.red{
     border: 1px solid rgba(0, 0, 0, 0.40);
-    background: #D93A00;
+    background: #cd6a5f;
     color: #FFF;
 }
 button.red:not(:disabled):hover{
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #D93A00;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #cd6a5f;
 }
 button.orange{
     border: 1px solid rgba(0, 0, 0, 0.15);
@@ -158,9 +158,9 @@ button.border_gray{
     color: #5C657F;
 }
 button.border_red{
-    border: 1px solid #FF334B;
+    border: 1px solid #cd6a5f;
     background: #FFF;
-    color: #FF334B;
+    color: #cd6a5f;
 }
 button.border_red:not(:disabled):hover{
     background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;

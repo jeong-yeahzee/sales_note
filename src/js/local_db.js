@@ -70,28 +70,30 @@ export const QR_L_SALES_PAYMENT = ()=>(`
     SELECT
         MAX(TS.SALES_DT) AS SHOW_DT,
         SUM(TS.TOTAL_SALES_DC_PRICE_OUT) AS TOTAL_SALES_AMOUNT,
+        0 AS TOTAL_PAYMENT_AMOUNT,
         CASE
             WHEN MAX(TS.SALES_TYPE) = '1' THEN '판매'
             WHEN MAX(TS.SALES_TYPE) = '2' THEN '반품'
-        END AS SALES_TYPE,
-        '1' AS TYPE,
-        NULL
+        END AS TYPE_NAME,
+        'S' AS TYPE,
+        NULL AS PAY_NO
     FROM TBL_SALES TS 
     WHERE SHOP_NO = ? AND SALES_DT BETWEEN ? AND ? 
     GROUP BY MASTER_NO
     UNION ALL
     SELECT
         TP.PAY_DT AS SHOW_DT,
-        TP.PAYMENT_AMOUNT AS TOTAL_PAYMENT_AMOUNT,
+        0 AS TOTAL_SALES_AMOUNT,
+        CASE
+            WHEN TP.PAY_TYPE = '1' THEN TP.PAYMENT_AMOUNT
+            WHEN TP.PAY_TYPE = '2' THEN TP.ADMIN_AMOUNT
+        END AS TOTAL_PAYMENT_AMOUNT,
         CASE
             WHEN TP.PAY_TYPE = '1' THEN '납부'
             WHEN TP.PAY_TYPE = '2' THEN '관리자 수정'
-        END AS SALES_TYPE,
-        CASE
-            WHEN TP.PAY_TYPE = '1' THEN '2'
-            WHEN TP.PAY_TYPE = '2' THEN '3'
-        END AS TYPE,
-        TP.PAY_NO
+        END AS TYPE_NAME,
+        'P' AS TYPE,
+        TP.PAY_NO AS PAY_NO
     FROM TBL_PAYMENT TP 
     WHERE SHOP_NO = ? AND PAY_DT BETWEEN ? AND ?
     ORDER BY SHOW_DT DESC;`);
