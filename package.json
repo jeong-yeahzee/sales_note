@@ -1,7 +1,7 @@
 {
   "name": "sales_note",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "main.js",
   "scripts": {
     "dev": "set NODE_ENV=development&&run-p dev:*",
