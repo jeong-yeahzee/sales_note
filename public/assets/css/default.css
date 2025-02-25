@@ -1,0 +1,179 @@
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-Thin.subset.woff2") format("woff2");
+    font-weight: 100;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-ExtraLight.subset.woff2") format("woff2");
+    font-weight: 200;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-Light.subset.woff2") format("woff2");
+    font-weight: 300;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-Regular.subset.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-Medium.subset.woff2") format("woff2");
+    font-weight: 500;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-SemiBold.subset.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-Bold.subset.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-ExtraBold.subset.woff2") format("woff2");
+    font-weight: 800;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pretendard";
+    src: url("../font/pretendard/Pretendard-Black.subset.woff2") format("woff2");
+    font-weight: 900;
+    font-display: swap;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, input, textarea {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    box-sizing: border-box;
+    line-height: 1;
+}
+
+input:focus,button:focus,textarea:focus,select:focus{
+    outline: none;
+}
+
+* {
+    font-family: Pretendard;
+}
+
+*:disabled{
+    opacity: 0.7;
+}
+
+button{
+    cursor: pointer;
+}
+button:disabled{
+    cursor: default;
+}
+
+/*버튼 공통 스타일*/
+button.blue{
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #5588A3;
+    color: #FFFFFF;
+}
+button.blue:not(:disabled):hover,
+button.blue:not(:disabled):focus{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #5588A3;
+}
+button.green{
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #3E8F3E;
+    color: #FFFFFF;
+}
+button.green:not(:disabled):hover{
+    background: linear-gradient(0deg, #3E8F3E 0%, #3E8F3E 100%), #5588A3;
+}
+button.gray{
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #F5F5F5;
+    color: #5C657F;
+}
+button.gray:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+button.white{
+    border: none;
+    background: #FFF;
+    color: #000;
+}
+button.white:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+button.red{
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #cd6a5f;
+    color: #FFF;
+}
+button.red:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #cd6a5f;
+}
+button.orange{
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #D97300;
+    color: #FFF;
+}
+button.orange:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #D97300;
+}
+
+button.border_blue{
+    border: 1px solid #3187BF;
+    background: #FFFFFF;
+    color: #3187BF;
+}
+button.border_blue:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+button.border_gray{
+    border: 1px solid rgba(0, 0, 0, 0.40);
+    background: #F5F5F5;
+    color: #5C657F;
+}
+button.border_red{
+    border: 1px solid #cd6a5f;
+    background: #FFF;
+    color: #cd6a5f;
+}
+button.border_red:not(:disabled):hover{
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), #FFF;
+}
+
+.grid_loading{
+    width: 48px;
+    height: 48px;
+    background-image: url("../img/loading.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.grid_bottom{
+    background-color: #e3f0ff;
+    font-weight: 700;
+}
