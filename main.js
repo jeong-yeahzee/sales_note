@@ -13,8 +13,8 @@ let server;
 
 app.on("ready", async ()=>{
   main_window = new BrowserWindow({
-    width: 1200,
-    height: 768,
+    width: 1280,
+    height: 864,
     icon: path.join(__dirname, "favicon.ico"),
     webPreferences: {
       nodeIntegration: false,

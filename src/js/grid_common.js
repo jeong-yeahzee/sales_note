@@ -1,4 +1,5 @@
 import * as agGrid from "ag-grid-community";
+import {g_nvl, uc} from "./common.js";
 
 export const custom_theme = agGrid.themeQuartz.withParams({
     spacing: 4,
@@ -38,4 +39,25 @@ export class grid_button_renderer_class {
     refresh() {
         return true;
     }
+}
+
+/**
+ * 그리드 합계 함수
+ * 그리드 마다 합계 항목이 다르므로
+ * 그리드 ID로 구분하여 필요한 값을 셋팅한다.
+ * 예) grid_bottom_sum(grid_api, grid_bottom);
+ */
+export function grid_bottom_sum(api, bottom_data, except_name = "총합계") {
+    //객체 깊은 복사
+    let temp_data = JSON.parse(JSON.stringify(bottom_data));
+    api.forEachNodeAfterFilter((node) => {
+        if(g_nvl(node.data, "") != "") {     // 그룹화 했을 때를 위해서
+            for (let key in temp_data[0]) {
+                if (temp_data[0][key] !== except_name) {
+                    temp_data[0][key] += parseFloat(uc(node.data[key]));
+                }
+            }
+        }
+    });
+    api.setGridOption("pinnedBottomRowData", temp_data);
 }

@@ -173,3 +173,7 @@ button.border_red:not(:disabled):hover{
     background-repeat: no-repeat;
     background-size: cover;
 }
+.grid_bottom{
+    background-color: #e3f0ff;
+    font-weight: 700;
+}
