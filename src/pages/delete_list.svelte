@@ -144,7 +144,16 @@
         QR_BACKUP_L_SHOP,
         QR_BACKUP_L_BRAND,
         QR_BACKUP_L_PRODUCT,
-        QR_BACKUP_L_SALES
+        QR_BACKUP_L_SALES,
+        QR_BACKUP_D_SHOP,
+        QR_BACKUP_D_BRAND,
+        QR_BACKUP_D_PRODUCT,
+        QR_BACKUP_D_SALES,
+        exec_transaction,
+        QR_BACKUP_TRANSACTION_D_SHOP,
+        QR_BACKUP_TRANSACTION_D_BRAND,
+        QR_BACKUP_TRANSACTION_D_PRODUCT,
+        QR_BACKUP_TRANSACTION_D_SALES
     } from "../js/local_db.js";
 
     const table_arr = [
@@ -398,17 +407,45 @@
 
     // 복구 버튼 클릭시
     function on_click_recover(){
-        confirm("선택한 데이터를 복구 하시겠습니까?", confirm_accepted);
-        function confirm_accepted(){
+        const selected_data = grid_api.getSelectedRows();
 
+        if(selected_data == 0){
+            return alert("복구할 데이터를 선택해주세요.");
+        }
+
+        confirm("선택한 데이터를 복구 하시겠습니까?", confirm_accepted);
+        async function confirm_accepted(){
+            const result = await DB_BACKUP_TRANSACTION_D(selected_data);
+
+            // DB 실행 오류일때
+            if(!result){
+                return alert("복구 실패\n재시도 부탁드립니다.");
+            }
+
+            alert("복구 되었습니다.");
+            await get_data();
         }
     }
 
     // 영구 삭제 버튼 클릭시
     function on_click_permanently_delete(){
-        confirm("선택된 데이터가 영구적으로 삭제됩니다.\n삭제하시겠습니까?", confirm_accepted);
-        function confirm_accepted(){
+        const selected_data = grid_api.getSelectedRows();
 
+        if(selected_data == 0){
+            return alert("삭제할 데이터를 선택해주세요.");
+        }
+
+        confirm("선택된 데이터가 영구적으로 삭제됩니다.\n삭제하시겠습니까?", confirm_accepted);
+        async function confirm_accepted(){
+            const result = await DB_BACKUP_D(selected_data);
+
+            // DB 실행 오류일때
+            if(!result){
+                return alert("삭제 실패\n재시도 부탁드립니다.");
+            }
+
+            alert("영구삭제 되었습니다.");
+            await get_data();
         }
     }
 
@@ -444,6 +481,83 @@
         }
 
         return await exec_all(param);
+    }
+
+    // 영구삭제
+    async function DB_BACKUP_D(data_arr){
+        const array_param = [];
+        const param = {
+            query: ""
+        };
+
+        switch (current_table) {
+            case "SHOP":
+                param.query = QR_BACKUP_D_SHOP();
+                break;
+            case "BRAND":
+                param.query = QR_BACKUP_D_BRAND();
+                break;
+            case "PRODUCT":
+                param.query = QR_BACKUP_D_PRODUCT();
+                break;
+            case "SALES":
+                param.query = QR_BACKUP_D_SALES();
+                break;
+            default:
+                return false;
+        }
+
+        // 여러건 한번에 저장할때 매개변수 위치 맞추기
+        for(const data of data_arr){
+
+            param.in1 = data.DELETE_NO;
+
+            array_param.push(param);
+        }
+        return await exec_transaction(array_param);
+    }
+
+    // 데이터 복구
+    async function DB_BACKUP_TRANSACTION_D(data_arr){
+        const array_param = [];
+        const param_i = {
+            query: ""
+        };
+        const param_d = {
+            query: ""
+        };
+
+        switch (current_table) {
+            case "SHOP":
+                param_i.query = QR_BACKUP_TRANSACTION_D_SHOP();
+                param_d.query = QR_BACKUP_D_SHOP();
+                break;
+            case "BRAND":
+                param_i.query = QR_BACKUP_TRANSACTION_D_BRAND();
+                param_d.query = QR_BACKUP_D_BRAND();
+                break;
+            case "PRODUCT":
+                param_i.query = QR_BACKUP_TRANSACTION_D_PRODUCT();
+                param_d.query = QR_BACKUP_D_PRODUCT();
+                break;
+            case "SALES":
+                param_i.query = QR_BACKUP_TRANSACTION_D_SALES();
+                param_d.query = QR_BACKUP_D_SALES();
+                break;
+            default:
+                return false;
+        }
+
+        // 여러건 한번에 저장할때 매개변수 위치 맞추기
+        for(const data of data_arr){
+
+            param_i.in1 = data.DELETE_NO;
+            param_d.in1 = data.DELETE_NO;
+
+            array_param.push(param_i);
+            array_param.push(param_d);
+        }
+        return await exec_transaction(array_param);
     }
 
     // 상품 목록 그리드

@@ -213,6 +213,7 @@ export const QR_U_SALES = ()=>(`
         ,TOTAL_SALES_PRICE_OUT = ?
         ,TOTAL_SALES_DC_PRICE_OUT = ?
         ,SALES_DT = ?
+        ,LAST_UPDATE_DT = CURRENT_TIMESTAMP
     WHERE SALES_NO = ?;`);
 
 // 거래처 삭제
@@ -229,6 +230,146 @@ export const QR_D_SALES = ()=>(`DELETE FROM TBL_SALES WHERE SALES_NO = ?;`);
 
 // 납부 삭제
 export const QR_D_PAYMENT = ()=>(`DELETE FROM TBL_PAYMENT WHERE PAY_NO = ?;`);
+
+// 거래처 영구삭제
+export const QR_BACKUP_D_SHOP = ()=>(`DELETE FROM BACKUP_TBL_SHOP WHERE DELETE_NO = ?;`);
+
+// 브랜드 영구삭제
+export const QR_BACKUP_D_BRAND = ()=>(`DELETE FROM BACKUP_TBL_BRAND WHERE DELETE_NO = ?;`);
+
+// 상품 영구삭제
+export const QR_BACKUP_D_PRODUCT = ()=>(`DELETE FROM BACKUP_TBL_PRODUCT WHERE DELETE_NO = ?;`);
+
+// 판매 영구삭제
+export const QR_BACKUP_D_SALES = ()=>(`DELETE FROM BACKUP_TBL_SALES WHERE DELETE_NO = ?;`);
+
+// 거래처 복구
+export const QR_BACKUP_TRANSACTION_D_SHOP = ()=>(`
+    INSERT INTO TBL_SHOP (
+        SHOP_NO,
+        SHOP_NAME,
+        STATUS,
+        BUSINESS_LICENSE,
+        TEL,
+        MOBILE,
+        EMAIL,
+        ADDRESS1,
+        ADDRESS2,
+        ZIPCODE,
+        CEO_NAME,
+        MEMO,
+        TOTAL_SALES_OUTSTANDING,
+        FIRST_CREATE_DT,
+        LAST_UPDATE_DT
+    )
+    SELECT 
+        SHOP_NO,
+        SHOP_NAME,
+        STATUS,
+        BUSINESS_LICENSE,
+        TEL,
+        MOBILE,
+        EMAIL,
+        ADDRESS1,
+        ADDRESS2,
+        ZIPCODE,
+        CEO_NAME,
+        MEMO,
+        TOTAL_SALES_OUTSTANDING,
+        FIRST_CREATE_DT,
+        LAST_UPDATE_DT
+    FROM BACKUP_TBL_SHOP WHERE DELETE_NO = ?;`);
+
+// 브랜드 복구
+export const QR_BACKUP_TRANSACTION_D_BRAND = ()=>(`
+        INSERT INTO TBL_BRAND (
+            BRAND_NO,
+            BRAND_NAME,
+            STATUS,
+            MEMO,
+            FIRST_CREATE_DT,
+            LAST_UPDATE_DT
+        )
+        SELECT
+            BRAND_NO,
+            BRAND_NAME,
+            STATUS,
+            MEMO,
+            FIRST_CREATE_DT,
+            LAST_UPDATE_DT
+        FROM BACKUP_TBL_BRAND WHERE DELETE_NO = ?;`);
+
+// 상품 복구
+export const QR_BACKUP_TRANSACTION_D_PRODUCT = ()=>(`
+        INSERT INTO TBL_PRODUCT (
+            BRAND_NO,
+            PRODUCT_NO,
+            PRODUCT_NAME,
+            PRICE_IN,
+            PRICE_OUT,
+            ORDER_NO,
+            STATUS,
+            MEMO,
+            FIRST_CREATE_DT,
+            LAST_UPDATE_DT
+        )
+        SELECT
+            BRAND_NO,
+            PRODUCT_NO,
+            PRODUCT_NAME,
+            PRICE_IN,
+            PRICE_OUT,
+            ORDER_NO,
+            STATUS,
+            MEMO,
+            FIRST_CREATE_DT,
+            LAST_UPDATE_DT
+        FROM BACKUP_TBL_PRODUCT WHERE DELETE_NO = ?;`);
+
+// 판매 복구
+export const QR_BACKUP_TRANSACTION_D_SALES = ()=>(`
+        INSERT INTO TBL_SALES (
+            MASTER_NO,
+            SALES_NO,
+            SHOP_NO,
+            SHOP_NAME,
+            BRAND_NO,
+            BRAND_NAME,
+            PRODUCT_NO,
+            PRODUCT_NAME,
+            SALES_COUNT,
+            DISCOUNT_PERCENT,
+            DISCOUNT_PRICE,
+            SALES_PRICE_OUT,
+            SALES_DC_PRICE_OUT,
+            TOTAL_SALES_PRICE_OUT,
+            TOTAL_SALES_DC_PRICE_OUT,
+            SALES_TYPE,
+            SALES_DT,
+            FIRST_CREATE_DT,
+            LAST_UPDATE_DT
+        )
+        SELECT
+            MASTER_NO,
+            SALES_NO,
+            SHOP_NO,
+            SHOP_NAME,
+            BRAND_NO,
+            BRAND_NAME,
+            PRODUCT_NO,
+            PRODUCT_NAME,
+            SALES_COUNT,
+            DISCOUNT_PERCENT,
+            DISCOUNT_PRICE,
+            SALES_PRICE_OUT,
+            SALES_DC_PRICE_OUT,
+            TOTAL_SALES_PRICE_OUT,
+            TOTAL_SALES_DC_PRICE_OUT,
+            SALES_TYPE,
+            SALES_DT,
+            FIRST_CREATE_DT,
+            LAST_UPDATE_DT
+        FROM BACKUP_TBL_SALES WHERE DELETE_NO = ?;`);
 
 // 사업자번호 중복 여부 확인
 export const QR_C_BUSINESS_LICENSE = ()=>(`SELECT EXISTS (SELECT 1 FROM TBL_SHOP WHERE BUSINESS_LICENSE = ?) AS IS_CHECK;`);

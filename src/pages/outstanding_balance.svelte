@@ -65,7 +65,6 @@
         min-width: 250px;
         box-sizing: border-box;
         padding: 16px 16px 8px;
-        background-color: rgba(0, 0, 0, 3%);
         gap: 8px;
     }
     .detail_list .default_btn{
@@ -176,7 +175,7 @@
         <div bind:this={this_shop_grid} class="ag-theme-quartz div_grid"></div>
         {#if shop_obj.SHOP_NO !== ""}
             <div class="content_header">거래 내역</div>
-            <div style="display: flex;height: 472px;">
+            <div style="display: flex;height: 472px;background-color: rgba(0, 0, 0, 3%);">
                 <div class="sales_list">
                     <div class="search_area">
                         <span class="search_title">검색기간 : </span>
@@ -605,6 +604,11 @@
         const grid_options = {
             theme: custom_theme,
             columnDefs: column_defs,
+            rowSelection: {
+                mode: "singleRow",
+                checkboxes: false,
+                enableClickSelection: true
+            },
             rowData: null,
             loading:false,
             overlayLoadingTemplate: "<div class='grid_loading'></div>",
@@ -628,26 +632,6 @@
             {
                 headerName: "판매일",
                 field: "SALES_DT",
-                flex:1
-            },
-            {
-                headerName: "전표번호",
-                field: "MASTER_NO",
-                flex:1
-            },
-            {
-                headerName: "판매번호",
-                field: "SALES_NO",
-                flex:1
-            },
-            {
-                headerName: "거래처번호",
-                field: "SHOP_NO",
-                flex:1
-            },
-            {
-                headerName: "거래처명",
-                field: "SHOP_NAME",
                 flex:1
             },
             {
