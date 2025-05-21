@@ -263,6 +263,11 @@
                                 {/each}
                             </div>
                         </Autocomplete>
+                        {#if product_obj.PRODUCT_NO !== "" || product_obj.PRODUCT_NAME !== ""}
+                            <div on:click={on_click_input_init} style="display: flex;">
+                                <Icon_delete color="#cd6a5f"/>
+                            </div>
+                        {/if}
                     </div>
                     <div class="grid_td text_right edit_input">
                         <input type="text" bind:this={this_sales_count}
@@ -270,8 +275,14 @@
                                on:keydown={on_keydown_sales_count}>
                     </div>
                     <div class="grid_td text_right">{comma(product_obj.SALES_PRICE_OUT)}</div>
-                    <div class="grid_td text_right">{product_obj.DISCOUNT_PERCENT}</div>
-                    <div class="grid_td text_right">{comma(product_obj.DISCOUNT_PRICE)}</div>
+                    <div class="grid_td text_right edit_input">
+                        <input type="text"
+                               bind:value={product_obj.DISCOUNT_PERCENT}>
+                    </div>
+                    <div class="grid_td text_right edit_input">
+                        <input type="text"
+                               bind:value={product_obj.DISCOUNT_PRICE}>
+                    </div>
                     <div class="grid_td text_right">{comma(product_obj.SALES_DC_PRICE_OUT)}</div>
                     <div class="grid_td text_right">{comma(product_obj.TOTAL_SALES_PRICE_OUT)}</div>
                     <div class="grid_td text_right">{comma(product_obj.TOTAL_SALES_DC_PRICE_OUT)}</div>
@@ -294,8 +305,12 @@
                                 <input type="text" bind:value={data.SALES_COUNT}>
                             </div>
                             <div class="grid_td text_right">{comma(data.SALES_PRICE_OUT)}</div>
-                            <div class="grid_td text_right">{data.DISCOUNT_PERCENT}</div>
-                            <div class="grid_td text_right">{comma(data.DISCOUNT_PRICE)}</div>
+                            <div class="grid_td text_right edit_input">
+                                <input type="text" bind:value={data.DISCOUNT_PERCENT}>
+                            </div>
+                            <div class="grid_td text_right edit_input">
+                                <input type="text" bind:value={data.DISCOUNT_PRICE}>
+                            </div>
                             <div class="grid_td text_right">{comma(data.SALES_DC_PRICE_OUT)}</div>
                             <div class="grid_td text_right">{comma(data.TOTAL_SALES_PRICE_OUT)}</div>
                             <div class="grid_td text_right">{comma(data.TOTAL_SALES_DC_PRICE_OUT)}</div>
@@ -428,6 +443,8 @@
     }
     $:{
         for(const data of sales_arr){
+            // 할인판매단가
+            data.SALES_DC_PRICE_OUT = dc_price_calc(data);
             // 판매가합계
             data.TOTAL_SALES_PRICE_OUT = Number(data.SALES_PRICE_OUT)*Number(data.SALES_COUNT);
             // 할인판매가합계
@@ -533,14 +550,21 @@
                 sales_arr.push(product_obj);
             }
 
-            // 검색한 상품 초기화
-            product_obj = product_schema();
-
             sales_arr = sales_arr;
 
-            // 모든 작업 끝나면 상품명 검색으로 focus
-            autocomplete.focus();
+            // 모든 작업 끝나면 입력한 상품정보 초기화
+            on_click_input_init();
         }
+    }
+
+    // 검색 및 입력한 상품정보 초기화
+    function on_click_input_init(){
+        // 검색한 상품 초기화
+        product_obj = product_schema();
+        // 검색한 목록 초기화
+        autocomplete_data = [];
+        // 상품명 검색으로 focus
+        autocomplete.focus();
     }
 
     // 추가한 판매상품 삭제
