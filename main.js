@@ -465,6 +465,8 @@ function create_trigger_query(){
         );
     END;`;
   const trigger_calc = `
+    DROP TRIGGER IF EXISTS TRIG_OUTSTANDING_SALES_CALC_DELETE;
+    
     CREATE TRIGGER IF NOT EXISTS TRIG_OUTSTANDING_SALES_CALC_INSERT
         AFTER INSERT ON TBL_SALES
         FOR EACH ROW
