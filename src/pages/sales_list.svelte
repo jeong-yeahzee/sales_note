@@ -68,8 +68,8 @@
     import * as agGrid from "ag-grid-community";
     import Datepicker_custom from "../../public/assets/component/Datepicker_custom.svelte";
     import {int_formatter, number_formatter} from "../js/common.js";
-    import {custom_theme, grid_bottom_sum} from "../js/grid_common.js";
-    import {exec_all, QR_L_SALES} from "../js/local_db.js";
+    import {custom_theme, grid_bottom_sum, grid_button_renderer_class} from "../js/grid_common.js";
+    import {exec_all, exec_transaction, QR_D_SALES, QR_L_SALES} from "../js/local_db.js";
 
     let search_obj = {
         SHOP_NO: null,
@@ -108,6 +108,24 @@
         grid_api.setGridOption("rowData", result);
     }
 
+    // 판매내역의 삭제 버튼 클릭시
+    function grid_row_delete(data){
+        confirm("판매정보 삭제시 미수금이 변경됩니다.\n삭제하시겠습니까?", confirm_accepted);
+
+        async function confirm_accepted(){
+            const result = await DB_D_SALES(data);
+
+            // DB 저장 오류일때
+            if(!result){
+                return alert("삭제 실패\n재시도 부탁드립니다.");
+            }
+
+            alert("삭제되었습니다.");
+            // 판매내역 재조회
+            await get_sales();
+        }
+    }
+
     // 판매내역 조회
     async function DB_L_SALES(){
         const param = {
@@ -120,8 +138,22 @@
         return await exec_all(param);
     }
 
+    // 판매 삭제
+    async function DB_D_SALES(data){
+        const param = {
+            query: QR_D_SALES(),
+            in1: data.SALES_NO
+        };
+        return await exec_transaction(param);
+    }
+
     // 판매 그리드
     function grid_options_init(){
+        const delete_btn_renderer_params = {
+            inner_html: `<button class="btn_delete border_red">삭제</button>`,
+            add_class: `.btn_delete`,
+            function_name : grid_row_delete,
+        };
         const column_defs = [
             {
                 headerName: "판매일",
@@ -198,6 +230,19 @@
                 headerName: "판매번호",
                 field: "SALES_NO",
                 width: 50
+            },
+            {
+                headerName: "판매삭제",
+                width: 60,
+                filter: false,
+                cellRendererSelector: (params) => {
+                    if (params.node.rowPinned != "bottom") {
+                        return {
+                            component: grid_button_renderer_class,
+                            params: delete_btn_renderer_params,
+                        };
+                    }
+                }
             },
             {
                 headerName: "할인판매가합계",
