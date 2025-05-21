@@ -197,7 +197,10 @@
                     {:else if search_obj.TYPE == "P"}
                         <div class="payment_area">
                             <div class="grid_th">{payment_obj.PAY_TYPE == 1 ? "납부일자":"수정일자"}</div>
-                            <div class="grid_td"><Datepicker_custom bind:date={payment_obj.PAY_DT}/></div>
+                            <div class="grid_td">
+                                <Datepicker_custom bind:date={payment_obj.PAY_DT}
+                                                   disabled={payment_obj.PAY_TYPE == 2 && payment_obj.PAY_NO != null}/>
+                            </div>
                             {#if payment_obj.PAY_TYPE == 1}
                                 <div class="grid_th">현금</div>
                                 <div class="grid_td"><input type="text" bind:value={payment_obj.CASH_AMOUNT}></div>
@@ -217,7 +220,8 @@
                             {/if}
                             <div class="grid_th" style="height: 48px;">메모</div>
                             <div class="grid_td" style="height: 48px;">
-                                <textarea bind:value={payment_obj.MEMO}></textarea>
+                                <textarea bind:value={payment_obj.MEMO}
+                                          disabled={payment_obj.PAY_TYPE == 2 && payment_obj.PAY_NO != null}/>
                             </div>
                             <div class="payment_area_footer" style="grid-column: 1 / span 2;">
                                 {#if payment_obj.PAY_NO != null}
@@ -312,7 +316,7 @@
         if(payment_obj.PAY_TYPE === "1"){
             payment_obj.PAYMENT_AMOUNT = Number(uc(payment_obj.CASH_AMOUNT)) + Number(uc(payment_obj.CARD_AMOUNT));
             payment_obj.TOTAL_CALC_AMOUNT = payment_obj.PAYMENT_AMOUNT + Number(uc(payment_obj.DISCOUNT_AMOUNT));
-        }else{
+        }else if (payment_obj.PAY_NO === null){
             payment_obj.ADMIN_AMOUNT = shop_obj.TOTAL_SALES_OUTSTANDING - Number(uc(payment_obj.EDIT_OUTSTANDING_AMOUNT));
             payment_obj.TOTAL_CALC_AMOUNT = payment_obj.ADMIN_AMOUNT;
         }
@@ -398,8 +402,18 @@
 
     // 거래처정보 조회
     async function get_shop(){
+        let index = -1;
+        if(shop_obj.SHOP_NO !== ""){
+            index = shop_grid_api.getSelectedNodes()[0].rowIndex;
+        }
+
         const result = await DB_L_SHOP();
         shop_grid_api.setGridOption("rowData", result);
+
+        // 정보 새로고침시 정보 재설정
+        if(index > -1){
+            shop_grid_api.getRowNode(index).setSelected(true);
+        }
     }
 
     // 납부/판매 정보 조회
@@ -559,14 +573,19 @@
             rowData: null,
             overlayLoadingTemplate: "<div class='grid_loading'></div>",
             overlayNoRowsTemplate: `<span>등록된 거래처가 없습니다.</span>`,
-            onRowClicked(event) {
-                if(event.node.data === undefined){
+            async onSelectionChanged(event) {
+                const selected_node = event.api.getSelectedNodes()[0];
+                if(selected_node === undefined){
                     return;
                 }
 
-                shop_obj = event.node.data;
-                get_sales_payment();
+                shop_obj = selected_node.data;
+                await get_sales_payment();
+
+                // 선택될때마다 스크롤 위치변경해주기
+                shop_grid_api.ensureIndexVisible(selected_node.rowIndex, 'middle');
             }
+
         }
 
         shop_grid_api = agGrid.createGrid(this_shop_grid, grid_options);
